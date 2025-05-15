@@ -3,6 +3,7 @@ import Button from '../../../shared/components/buttons/button/Button';
 import SVGLogo from '../../../shared/components/icons/SVGLogo';
 import Input from '../../../shared/components/inputs/input/Input';
 import { useRequests } from '../../../shared/hooks/useRequests';
+import { useNavigate } from 'react-router-dom';
 import {
   BackgroundImage,
   ContainerLogin,
@@ -12,9 +13,10 @@ import {
 } from '../styles/loginScreen.styles';
 
 const LoginScreen = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {authRequest,loading } = useRequests();
+  const { authRequest, loading } = useRequests();
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -24,12 +26,11 @@ const LoginScreen = () => {
     setPassword(event.target.value);
   };
 
-   const handleLogin = () => {
-     authRequest({
+  const handleLogin = () => {
+    authRequest(navigate, {
       email: email,
       password: password,
     });
-
   };
 
   return (
