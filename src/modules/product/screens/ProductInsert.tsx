@@ -4,12 +4,11 @@ import Input from '../../../shared/components/inputs/input/Input';
 import Select from '../../../shared/components/inputs/select/Select';
 import Screen from '../../../shared/components/screen/Screen';
 import { ProductRoutesEnum } from '../routes';
-import { ProductInsertContainer } from '../styles/productInsert.style';
 import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
-import { DisplayFlexJustifyRight } from '../../../shared/components/styles/display.stuled';
 import InputMoney from '../../../shared/components/inputs/inputMoney/InputMoney';
 import { useInsertProduct } from '../hooks/useInsertProduct';
 import { useCategory } from '../../category/hooks/useCategory';
+import {DisplayFlexJustifyCenter, DisplayFlexJustifyRight } from '../../../shared/components/styles/display.styled';
 
 const ProductInsert = () => {
   const {
@@ -42,7 +41,7 @@ const ProductInsert = () => {
         },
       ]}
     >
-      <ProductInsertContainer>
+      <DisplayFlexJustifyCenter>
         <LimitedContainer width={400}>
           <Input
             onChange={(event) => onChangeInput(event, 'name')}
@@ -92,7 +91,7 @@ const ProductInsert = () => {
             </LimitedContainer>
           </DisplayFlexJustifyRight>
         </LimitedContainer>
-      </ProductInsertContainer>
+        </DisplayFlexJustifyCenter>
     </Screen>
   );
 };
