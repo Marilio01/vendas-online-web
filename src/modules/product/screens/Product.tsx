@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { ColumnsType } from 'antd/es/table';
 import { URL_PRODUCT } from '../../../shared/constants/urls';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
-import { useDataContext } from '../../../shared/hooks/useDataContext';
+import { useProductReducer } from '../../../store/reducers/productReducer/useProductReducer';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { ProductType } from '../../../shared/types/ProductType';
 import CategoryColumn from '../components/CategoryColumn';
@@ -48,7 +48,7 @@ const columns: ColumnsType<ProductType> = [
 ];
 
 const Product = () => {
-  const { products, setProducts } = useDataContext();
+  const { products, setProducts } = useProductReducer();
   const [productsFiltered, setProdutsFiltered] = useState<ProductType[]>([]);
   const { request } = useRequests();
   const navigate = useNavigate();
