@@ -9,14 +9,13 @@ import type { MenuProps } from 'antd';
 import { Menu as MenuAntd } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { CategoryRoutesEnum } from '../../../modules/category/routes';
 import { ProductRoutesEnum } from '../../../modules/product/routes';
 import { ContainerLogoName, ContainerMenu, LogoMenu, NameCompany } from './menu.style';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 const Menu = () => {
-
   const navigate = useNavigate();
   const [current, setCurrent] = useState('1');
 
@@ -51,12 +50,12 @@ const Menu = () => {
         {
           key: 'category_view',
           label: 'Visualizar',
-          onClick: () => navigate(ProductRoutesEnum.PRODUCT),
+          onClick: () => navigate(CategoryRoutesEnum.CATEGORY),
         },
         {
           key: 'category_insert',
           label: 'Inserir',
-          onClick: () => navigate(ProductRoutesEnum.PRODUCT_INSERT),
+          onClick: () => navigate(CategoryRoutesEnum.CATEGORY_INSERT),
         },
       ],
     },
@@ -82,7 +81,7 @@ const Menu = () => {
         <LogoMenu />
         <NameCompany>Vendas Online</NameCompany>
       </ContainerLogoName>
-       <MenuAntd
+      <MenuAntd
         theme="dark"
         onClick={onClick}
         style={{ width: 240 }}

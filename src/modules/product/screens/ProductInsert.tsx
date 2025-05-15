@@ -4,19 +4,15 @@ import Input from '../../../shared/components/inputs/input/Input';
 import Select from '../../../shared/components/inputs/select/Select';
 import Screen from '../../../shared/components/screen/Screen';
 import { ProductRoutesEnum } from '../routes';
-import { URL_CATEGORY } from '../../../shared/constants/urls';
-import { MethodsEnum } from '../../../shared/enums/methods.enum';
-import { useDataContext } from '../../../shared/hooks/useDataContext';
-import { useRequests } from '../../../shared/hooks/useRequests';
 import { ProductInsertContainer } from '../styles/productInsert.style';
 import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
 import { DisplayFlexJustifyRight } from '../../../shared/components/styles/display.stuled';
 import InputMoney from '../../../shared/components/inputs/inputMoney/InputMoney';
-import { useEffect } from 'react';
 import { useInsertProduct } from '../hooks/useInsertProduct';
+import { useCategory } from '../../category/hooks/useCategory';
 
 const ProductInsert = () => {
-   const {
+  const {
     product,
     loading,
     disabledButton,
@@ -24,16 +20,8 @@ const ProductInsert = () => {
     handleInsertProduct,
     handleChangeSelect,
   } = useInsertProduct();
-  const { categories, setCategories } = useDataContext();
-  const { request } = useRequests();
+  const { categories } = useCategory();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (categories.length === 0) {
-      request(URL_CATEGORY, MethodsEnum.GET, setCategories);
-    }
-  }, []);
-
 
   const handleOnClickCancel = () => {
     navigate(ProductRoutesEnum.PRODUCT);
@@ -64,7 +52,7 @@ const ProductInsert = () => {
             placeholder="Nome"
           />
           <Input
-             onChange={(event) => onChangeInput(event, 'image')}
+            onChange={(event) => onChangeInput(event, 'image')}
             value={product.image}
             margin="0px 0px 16px 0px"
             title="Url imagem"
@@ -80,7 +68,7 @@ const ProductInsert = () => {
           <Select
             title="Categoria"
             margin="0px 0px 32px 0px"
-               onChange={handleChangeSelect}
+            onChange={handleChangeSelect}
             options={categories.map((category) => ({
               value: `${category.id}`,
               label: `${category.name}`,
