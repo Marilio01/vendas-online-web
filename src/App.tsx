@@ -5,7 +5,7 @@ import { loginRoutes } from './modules/login/routes';
 import { productScreens } from './modules/product/routes';
 import { useNotification } from './shared/hooks/useNotification';
 import { getAuthorizationToken, verifyLoggedIn } from './shared/functions/connection/auth';
-import { useGlobalContext } from './shared/hooks/useGlobalContext';
+import { useGlobalReducer } from './store/reducers/globalReducer/useGlobalReducer';
 import { useRequests } from './shared/hooks/useRequests';
 import { useEffect } from 'react';
 import { URL_USER } from './shared/constants/urls';
@@ -26,7 +26,7 @@ const router: RemixRouter = createBrowserRouter([...routes, ...routesLoggedIn]);
 
 function App() {
   const { contextHolder } = useNotification();
-  const { setUser } = useGlobalContext();
+  const { setUser } = useGlobalReducer();
   const { request } = useRequests();
 
   useEffect(() => {

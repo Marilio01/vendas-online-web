@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { URL_CATEGORY } from '../../../shared/constants/urls';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
-import { useDataContext } from '../../../shared/hooks/useDataContext';
+import { useCategoryReducer } from '../../../store/reducers/categoryReducer/useCategoryReducer';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { CategoryRoutesEnum } from '../routes';
 
@@ -13,7 +12,7 @@ export const useInsertCategory = () => {
   const [loading, setLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(true);
   const { request } = useRequests();
-  const { setCategories } = useDataContext();
+  const { setCategories } = useCategoryReducer();
 
   useEffect(() => {
     if (!name) {
