@@ -1,6 +1,5 @@
 import { Input } from 'antd';
 import { ColumnsType } from 'antd/es/table';
-
 import { ProductType } from '../../../shared/types/ProductType';
 import CategoryColumn from '../components/CategoryColumn';
 import TooltipImage from '../components/TooltipImage';
@@ -17,7 +16,13 @@ const { Search } = Input;
 
 
 const Product = () => {
-  const { productsFiltered, handleOnClickInsert, onSearch, handleDeleteProduct } = useProduct();
+ const {
+    productsFiltered,
+    handleOnClickInsert,
+    onSearch,
+    handleDeleteProduct,
+    handleEditProduct,
+  } = useProduct();
   
   const columns: ColumnsType<ProductType> = useMemo(
     () => [
@@ -50,7 +55,12 @@ const Product = () => {
         title: 'Action',
         dataIndex: '',
         key: 'x',
-        render: (_, product) => <a onClick={() => handleDeleteProduct(product.id)}>Deletar</a>,
+        render: (_, product) => (
+          <>
+            <a onClick={() => handleEditProduct(product.id)}>Editar</a>
+            <a onClick={() => handleDeleteProduct(product.id)}>Deletar</a>
+          </>
+        ),
       },
     ],
     [],

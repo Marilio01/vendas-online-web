@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../../../shared/components/buttons/button/Button';
 import Input from '../../../shared/components/inputs/input/Input';
 import Select from '../../../shared/components/inputs/select/Select';
@@ -8,9 +8,13 @@ import { LimitedContainer } from '../../../shared/components/styles/limited.styl
 import InputMoney from '../../../shared/components/inputs/inputMoney/InputMoney';
 import { useInsertProduct } from '../hooks/useInsertProduct';
 import { useCategory } from '../../category/hooks/useCategory';
-import {DisplayFlexJustifyCenter, DisplayFlexJustifyRight } from '../../../shared/components/styles/display.styled';
+import {
+  DisplayFlexJustifyCenter,
+  DisplayFlexJustifyRight,
+} from '../../../shared/components/styles/display.styled';
 
 const ProductInsert = () => {
+   const { productId } = useParams<{ productId: string }>();
   const {
     product,
     loading,
@@ -18,7 +22,7 @@ const ProductInsert = () => {
     onChangeInput,
     handleInsertProduct,
     handleChangeSelect,
-  } = useInsertProduct();
+   } = useInsertProduct(productId);
   const { categories } = useCategory();
   const navigate = useNavigate();
 
@@ -66,7 +70,7 @@ const ProductInsert = () => {
           />
           <Select
             title="Categoria"
-            margin="0px 0px 32px 0px"
+            margin="0px 0px 16px 0px"
             onChange={handleChangeSelect}
             options={categories.map((category) => ({
               value: `${category.id}`,

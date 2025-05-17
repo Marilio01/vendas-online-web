@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { URL_PRODUCT } from '../../../shared/constants/urls';
+import { URL_PRODUCT, URL_PRODUCT_ID } from '../../../shared/constants/urls';
 import { InsertProduct } from '../../../shared/dtos/InsertProduct.dto';
 import { connectionAPIPost } from '../../../shared/functions/connection/connectionAPI';
 import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 import { ProductRoutesEnum } from '../routes';
+import { MethodsEnum } from '../../../shared/enums/methods.enum';
+import { useRequests } from '../../../shared/hooks/useRequests';
+import { useProductReducer } from '../../../store/reducers/productReducer/useProductReducer';
 
-export const useInsertProduct = () => {
+
+export const useInsertProduct = (productId?: string) => {
   const navigate = useNavigate();
+  const { request } = useRequests();
+  const { product: productReducer, setProduct: setProductReducer } = useProductReducer();
   const { setNotification } = useGlobalReducer();
   const [loading, setLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(true);
@@ -24,6 +30,25 @@ export const useInsertProduct = () => {
       setDisabledButton(true);
     }
   }, [product]);
+
+  useEffect(() => {
+    if (productReducer) {
+      setProduct({
+        name: productReducer.name,
+        price: productReducer.price,
+        image: productReducer.image,
+        categoryId: productReducer.category?.id,
+      });
+    }
+  }, [productReducer]);
+
+  useEffect(() => {
+    if (productId) {
+      setProductReducer(undefined);
+      request(URL_PRODUCT_ID.replace('{productId}', productId), MethodsEnum.GET, setProductReducer);
+    }
+  }, [productId]);
+
 
   const onChangeInput = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -65,3 +90,4 @@ export const useInsertProduct = () => {
     handleChangeSelect,
   };
 };
+
