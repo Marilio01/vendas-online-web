@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Button from '../../../shared/components/buttons/button/Button';
 import Input from '../../../shared/components/inputs/input/Input';
 import Select from '../../../shared/components/inputs/select/Select';
@@ -12,23 +12,22 @@ import {
   DisplayFlexJustifyCenter,
   DisplayFlexJustifyRight,
 } from '../../../shared/components/styles/display.styled';
+import { CategoryType } from '../../../shared/types/CategoryType';
+import { ProductInsertTestIdEnum } from '../enum/ProductInsertTestIdEnum';
 
 const ProductInsert = () => {
-   const { productId } = useParams<{ productId: string }>();
+  const { productId } = useParams<{ productId: string }>();
   const {
     product,
     loading,
     disabledButton,
+    isEdit,
     onChangeInput,
     handleInsertProduct,
     handleChangeSelect,
-   } = useInsertProduct(productId);
+    handleOnClickCancel,
+  } = useInsertProduct(productId);
   const { categories } = useCategory();
-  const navigate = useNavigate();
-
-  const handleOnClickCancel = () => {
-    navigate(ProductRoutesEnum.PRODUCT);
-  };
 
   return (
     <Screen
@@ -45,57 +44,71 @@ const ProductInsert = () => {
         },
       ]}
     >
-      <DisplayFlexJustifyCenter>
-        <LimitedContainer width={400}>
-          <Input
-            onChange={(event) => onChangeInput(event, 'name')}
-            value={product.name}
-            margin="0px 0px 16px 0px"
-            title="Nome"
-            placeholder="Nome"
-          />
-          <Input
-            onChange={(event) => onChangeInput(event, 'image')}
-            value={product.image}
-            margin="0px 0px 16px 0px"
-            title="Url imagem"
-            placeholder="Url imagem"
-          />
-          <InputMoney
-            onChange={(event) => onChangeInput(event, 'price', true)}
-            value={product.price}
-            margin="0px 0px 16px 0px"
-            title="Preço"
-            placeholder="Preço"
-          />
-          <Select
-            title="Categoria"
-            margin="0px 0px 16px 0px"
-            onChange={handleChangeSelect}
-            options={categories.map((category) => ({
-              value: `${category.id}`,
-              label: `${category.name}`,
-            }))}
-          />
-          <DisplayFlexJustifyRight>
-            <LimitedContainer margin="0px 8px" width={120}>
-              <Button danger onClick={handleOnClickCancel}>
-                Cancelar
-              </Button>
-            </LimitedContainer>
-            <LimitedContainer width={120}>
-              <Button
-                loading={loading}
-                disabled={disabledButton}
-                onClick={handleInsertProduct}
-                type="primary"
-              >
-                Inserir produto
-              </Button>
-            </LimitedContainer>
-          </DisplayFlexJustifyRight>
-        </LimitedContainer>
+      {loading ? (
+        <div>carregando</div>
+      ) : (
+        <DisplayFlexJustifyCenter data-testid={ProductInsertTestIdEnum.PRODUCT_INSERT_CONTAINER}>
+          <LimitedContainer width={400}>
+            <Input
+              data-testid={ProductInsertTestIdEnum.PRODUCT_INPUT_NAME}
+              onChange={(event) => onChangeInput(event, 'name')}
+              value={product.name}
+              margin="0px 0px 16px 0px"
+              title="Nome"
+              placeholder="Nome"
+            />
+            <Input
+              data-testid={ProductInsertTestIdEnum.PRODUCT_INPUT_IMAGE}
+              onChange={(event) => onChangeInput(event, 'image')}
+              value={product.image}
+              margin="0px 0px 16px 0px"
+              title="Url imagem"
+              placeholder="Url imagem"
+            />
+            <InputMoney
+              data-testid={ProductInsertTestIdEnum.PRODUCT_INPUT_PRICE}
+              onChange={(event) => onChangeInput(event, 'price', true)}
+              value={product.price}
+              margin="0px 0px 16px 0px"
+              title="Preço"
+              placeholder="Preço"
+            />
+            <Select
+              defaultValue={`${product.categoryId || ''}`}
+              data-testid={ProductInsertTestIdEnum.PRODUCT_INPUT_SELECT}
+              title="Categoria"
+              margin="0px 0px 16px 0px"
+              onChange={handleChangeSelect}
+              options={categories.map((category: CategoryType) => ({
+                value: `${category.id}`,
+                label: `${category.name}`,
+              }))}
+            />
+            <DisplayFlexJustifyRight>
+              <LimitedContainer margin="0px 8px" width={120}>
+                <Button
+                  data-testid={ProductInsertTestIdEnum.PRODUCT_BUTTON_CANCEL}
+                  danger
+                  onClick={handleOnClickCancel}
+                >
+                  Cancelar
+                </Button>
+              </LimitedContainer>
+              <LimitedContainer width={120}>
+                <Button
+                  data-testid={ProductInsertTestIdEnum.PRODUCT_BUTTON_INSERT}
+                  loading={loading}
+                  disabled={disabledButton}
+                  onClick={handleInsertProduct}
+                  type="primary"
+                >
+                  {isEdit ? 'Salvar' : 'Inserir produto'}
+                </Button>
+              </LimitedContainer>
+            </DisplayFlexJustifyRight>
+          </LimitedContainer>
         </DisplayFlexJustifyCenter>
+      )}
     </Screen>
   );
 };
