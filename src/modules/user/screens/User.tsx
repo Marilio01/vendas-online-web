@@ -13,6 +13,9 @@ import Table from '../../../shared/components/table/Table';
 import { insertMaskInCpf } from '../../../shared/functions/cpf';
 import { insertMaskInPhone } from '../../../shared/functions/phone';
 import { UserType } from '../../login/types/UserType';
+import { useMemo } from 'react';
+import { UserTypeEnum } from '../../../shared/enums/userType.enum';
+import { getUserInfoByToken } from '../../../shared/functions/connection/auth';
 
 const { Search } = Input;
 
@@ -52,6 +55,8 @@ const columns: ColumnsType<UserType> = [
 const User = () => {
   const { users, loading, handleOnChangeSearch } = useUser();
 
+   const userToken = useMemo(() => getUserInfoByToken(), []);
+
   return (
     <Screen
       listBreadcrumb={[
@@ -73,10 +78,12 @@ const User = () => {
             <LimitedContainer width={240}>
               <Search placeholder="Buscar usuário" onSearch={handleOnChangeSearch} enterButton />
             </LimitedContainer>
-            <LimitedContainer width={120}>
-              <Button type="primary" onClick={() => null}>
-                Inserir
-              </Button>
+            <LimitedContainer width={180}>
+              {userToken?.typeUser === UserTypeEnum.Root && (
+                <Button type="primary" onClick={() => null}>
+                  Inserir Admin
+                </Button>
+              )}
             </LimitedContainer>
           </DisplayFlexJustifyBetween>
           <Table columns={columns} dataSource={users} />

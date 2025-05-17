@@ -5,6 +5,7 @@ import { AUTHORIZATION_KEY } from '../../constants/authorizationConstants';
 import { getItemStorage, removeItemStorage, setItemStorage } from './storageProxy';
 import { URL_USER } from '../../constants/urls';
 import { connectionAPIGet } from './connectionAPI';
+import { UserTokenType } from '../../../modules/login/types/UserTokenType';
 
 export const unsetAuthorizationToken = () => removeItemStorage(AUTHORIZATION_KEY);
 
@@ -15,6 +16,17 @@ export const setAuthorizationToken = (token?: string) => {
 };
 
 export const getAuthorizationToken = () => getItemStorage(AUTHORIZATION_KEY);
+
+export const getUserInfoByToken = (): UserTokenType | undefined => {
+  const token = getAuthorizationToken();
+  const tokenSplited = token?.split('.');
+
+  if (tokenSplited && tokenSplited.length > 1) {
+    return JSON.parse(window.atob(tokenSplited[1]));
+  }
+
+  return undefined;
+};
 
 export const verifyLoggedIn = async () => {
   const token = getAuthorizationToken();
