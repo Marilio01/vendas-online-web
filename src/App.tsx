@@ -12,12 +12,14 @@ import { URL_USER } from './shared/constants/urls';
 import { MethodsEnum } from './shared/enums/methods.enum';
 import { categoryScreens } from './modules/category/routes';
 import { orderScreens } from './modules/orders/routes';
+import { userScreens } from './modules/user/routes';
 
 const routes: RouteObject[] = [...loginRoutes];
 const routesLoggedIn: RouteObject[] = [
   ...productScreens,
   ...categoryScreens,
   ...firstScreenRoutes,
+  ...userScreens,
   ...orderScreens,
 ].map((route) => ({
   ...route,

@@ -13,6 +13,7 @@ import { CategoryRoutesEnum } from '../../../modules/category/routes';
 import { ProductRoutesEnum } from '../../../modules/product/routes';
 import { ContainerLogoName, ContainerMenu, LogoMenu, NameCompany } from './menu.style';
 import { OrderRoutesEnum } from '../../../modules/orders/routes';
+import { UserRoutesEnum } from '../../../modules/user/routes';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -70,6 +71,7 @@ const Menu = () => {
       key: 'user',
       label: 'Clientes',
       icon: <UserOutlined />,
+      onClick: () => navigate(UserRoutesEnum.USER),
     },
   ];
 
