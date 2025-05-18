@@ -1,4 +1,4 @@
-import { Descriptions, Divider, Spin } from 'antd';
+import { Descriptions, Divider } from 'antd';
 import Screen from '../../../shared/components/screen/Screen';
 import { OrderRoutesEnum } from '../routes';
 import { useParams } from 'react-router-dom';
@@ -9,6 +9,7 @@ import ListOrderProduct from '../componets/ListOrderProduct';
 import { insertMaskInCEP } from '../../../shared/functions/address';
 import { insertMaskInCpf } from '../../../shared/functions/cpf';
 import { insertMaskInPhone } from '../../../shared/functions/phone';
+import Loading from '../../../shared/components/loading/Loading';
 
 const OrderDetail = () => {
   const { orderId } = useParams<{ orderId: string }>();
@@ -34,7 +35,7 @@ const OrderDetail = () => {
     >
       {!order || loading ? (
         <DisplayFlexJustifyCenter>
-          <Spin size="large" />
+          <Loading size="large" />
         </DisplayFlexJustifyCenter>
       ) : (
         <>

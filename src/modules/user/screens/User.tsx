@@ -1,4 +1,4 @@
-import { Spin } from 'antd';
+import Loading from '../../../shared/components/loading/Loading';
 import { Input } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import Button from '../../../shared/components/buttons/button/Button';
@@ -77,7 +77,7 @@ const User = () => {
     >
       {loading ? (
         <DisplayFlexJustifyCenter>
-          <Spin size="large" />
+          <Loading size="large" />
         </DisplayFlexJustifyCenter>
       ) : (
         <>

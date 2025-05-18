@@ -14,6 +14,7 @@ import {
 } from '../../../shared/components/styles/display.styled';
 import { CategoryType } from '../../../shared/types/CategoryType';
 import { ProductInsertTestIdEnum } from '../enum/ProductInsertTestIdEnum';
+import Loading from '../../../shared/components/loading/Loading';
 
 const ProductInsert = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -22,6 +23,7 @@ const ProductInsert = () => {
     loading,
     disabledButton,
     isEdit,
+    loadingProduct,
     onChangeInput,
     handleInsertProduct,
     handleChangeSelect,
@@ -44,8 +46,10 @@ const ProductInsert = () => {
         },
       ]}
     >
-      {loading ? (
-        <div>carregando</div>
+      {loadingProduct ? (
+        <DisplayFlexJustifyCenter>
+          <Loading size="large" />
+        </DisplayFlexJustifyCenter>
       ) : (
         <DisplayFlexJustifyCenter data-testid={ProductInsertTestIdEnum.PRODUCT_INSERT_CONTAINER}>
           <LimitedContainer width={400}>
