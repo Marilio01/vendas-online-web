@@ -1,18 +1,24 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { URL_CATEGORY } from '../../../shared/constants/urls';
+import { useNavigate, useParams } from 'react-router-dom';
+import { URL_CATEGORY, URL_CATEGORY_ID } from '../../../shared/constants/urls';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { useCategoryReducer } from '../../../store/reducers/categoryReducer/useCategoryReducer';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { CategoryRoutesEnum } from '../routes';
 
 export const useInsertCategory = () => {
+  const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
   const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(true);
-  const { request } = useRequests();
-  const { setCategories } = useCategoryReducer();
+  const { request, loading } = useRequests();
+  const { setCategories, category, setCategory } = useCategoryReducer();
+
+  useEffect(() => {
+    if (category) {
+      setName(category.name);
+    }
+  }, [category]);
 
   useEffect(() => {
     if (!name) {
@@ -22,11 +28,26 @@ export const useInsertCategory = () => {
     }
   }, [name]);
 
+  useEffect(() => {
+    if (categoryId) {
+      request(URL_CATEGORY_ID.replace('{categoryId}', categoryId), MethodsEnum.GET, setCategory);
+    } else {
+      setName('');
+    }
+  }, [categoryId]);
+
   const insertCategory = async () => {
-    setLoading(true);
-    await request(URL_CATEGORY, MethodsEnum.POST, undefined, { name });
+    if (categoryId) {
+      await request(
+        URL_CATEGORY_ID.replace('{categoryId}', categoryId),
+        MethodsEnum.PUT,
+        undefined,
+        { name },
+      );
+    } else {
+      await request(URL_CATEGORY, MethodsEnum.POST, undefined, { name });
+    }
     await request(URL_CATEGORY, MethodsEnum.GET, setCategories);
-    setLoading(false);
     navigate(CategoryRoutesEnum.CATEGORY);
   };
 
@@ -36,6 +57,7 @@ export const useInsertCategory = () => {
 
   return {
     name,
+    categoryId,
     disabledButton,
     handleOnChangeName,
     insertCategory,
