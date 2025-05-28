@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../../shared/components/buttons/button/Button';
 import SVGLogo from '../../../shared/components/icons/SVGLogo';
 import Input from '../../../shared/components/inputs/input/Input';
 import { useRequests } from '../../../shared/hooks/useRequests';
-import { useNavigate } from 'react-router-dom';
 import {
   BackgroundImage,
   ContainerLogin,
   ContainerLoginScreen,
   LimitedContainer,
   TitleLogin,
+  RegisterLinkText,
 } from '../styles/loginScreen.styles';
 
 const LoginScreen = () => {
@@ -17,6 +18,10 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { authRequest, loading } = useRequests();
+
+  useEffect(() => {
+    document.title = 'Login';
+  }, []);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -41,17 +46,35 @@ const LoginScreen = () => {
           <TitleLogin level={2} type="secondary">
             LOGIN
           </TitleLogin>
-          <Input title="USUÁRIO" margin="32px 0px 0px" onChange={handleEmail} value={email} />
+          <Input
+            title="USUÁRIO"
+            margin="32px 0px 0px"
+            onChange={handleEmail}
+            value={email}
+            placeholder="Digite seu usuário"
+          />
           <Input
             type="password"
             title="SENHA"
             margin="32px 0px 0px"
             onChange={handlePassword}
             value={password}
+            placeholder="Digite sua senha"
           />
-          <Button loading={loading} type="primary" margin="64px 0px 16px 0px" onClick={handleLogin}>
+
+          <Button
+            loading={loading}
+            type="primary"
+            margin="64px 0px 16px 0px"
+            onClick={handleLogin}
+          >
             ENTRAR
           </Button>
+
+          <RegisterLinkText>
+            Não tem uma conta?{' '}
+            <Link to="/register">Cadastre-se aqui</Link>
+          </RegisterLinkText>
         </LimitedContainer>
       </ContainerLogin>
       <BackgroundImage src="./background.jpg" />
