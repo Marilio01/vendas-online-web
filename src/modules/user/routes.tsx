@@ -1,7 +1,7 @@
 import { RouteObject } from 'react-router-dom';
 import User from './screens/User';
 import Admin from './screens/Admin';
-import AdminInsert from './screens/AdminINsert';
+import AdminInsert from './screens/AdminInsert';
 
 export enum UserRoutesEnum {
   ADMIN = '/admin',

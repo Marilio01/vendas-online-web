@@ -14,6 +14,7 @@ import { categoryScreens } from './modules/category/routes';
 import { orderScreens } from './modules/orders/routes';
 import { userScreens } from './modules/user/routes';
 import { registerRoutes } from './modules/register/routes';
+import { UsuarioDisplayRoutes } from './modules/usuarioDisplay/routes';
 
 const routes: RouteObject[] = [...loginRoutes];
 const routesLoggedIn: RouteObject[] = [
@@ -23,6 +24,7 @@ const routesLoggedIn: RouteObject[] = [
   ...userScreens,
   ...orderScreens,
   ...registerRoutes,
+  ...UsuarioDisplayRoutes,
 ].map((route) => ({
   ...route,
   loader: () => verifyLoggedIn,
