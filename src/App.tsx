@@ -13,6 +13,7 @@ import { MethodsEnum } from './shared/enums/methods.enum';
 import { categoryScreens } from './modules/category/routes';
 import { orderScreens } from './modules/orders/routes';
 import { userScreens } from './modules/user/routes';
+import { registerRoutes } from './modules/register/routes';
 
 const routes: RouteObject[] = [...loginRoutes];
 const routesLoggedIn: RouteObject[] = [
@@ -21,6 +22,7 @@ const routesLoggedIn: RouteObject[] = [
   ...firstScreenRoutes,
   ...userScreens,
   ...orderScreens,
+  ...registerRoutes,
 ].map((route) => ({
   ...route,
   loader: () => verifyLoggedIn,
