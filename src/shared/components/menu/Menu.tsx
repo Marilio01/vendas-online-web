@@ -3,21 +3,25 @@ import {
   LaptopOutlined,
   ProfileOutlined,
   SafetyCertificateOutlined,
-  UserOutlined,
+  TeamOutlined,
+  CrownOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu as MenuAntd } from 'antd';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CategoryRoutesEnum } from '../../../modules/category/routes';
 import { ProductRoutesEnum } from '../../../modules/product/routes';
 import { ContainerLogoName, ContainerMenu, LogoMenu, NameCompany } from './menu.style';
 import { OrderRoutesEnum } from '../../../modules/orders/routes';
 import { UserRoutesEnum } from '../../../modules/user/routes';
+import { getUserInfoByToken } from '../../functions/connection/auth';
+import { UserTypeEnum } from '../../../shared/enums/userType.enum';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 const Menu = () => {
+  const userToken = useMemo(() => getUserInfoByToken(), []);
   const navigate = useNavigate();
   const [current, setCurrent] = useState('1');
 
@@ -70,9 +74,19 @@ const Menu = () => {
     {
       key: 'user',
       label: 'Clientes',
-      icon: <UserOutlined />,
+      icon: <TeamOutlined />,
       onClick: () => navigate(UserRoutesEnum.USER),
     },
+    ...(userToken?.typeUser === UserTypeEnum.Root
+      ? [
+          {
+            key: 'admin',
+            label: 'Admins',
+            icon: <CrownOutlined />,
+            onClick: () => navigate(UserRoutesEnum.ADMIN),
+          },
+        ]
+      : []),
   ];
 
   const onClick: MenuProps['onClick'] = (e) => {
