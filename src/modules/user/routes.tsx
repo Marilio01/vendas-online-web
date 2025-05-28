@@ -1,19 +1,25 @@
 import { RouteObject } from 'react-router-dom';
 import User from './screens/User';
-import UserInsert from './screens/UserInsert';
+import Admin from './screens/Admin';
+import AdminInsert from './screens/AdminINsert';
 
 export enum UserRoutesEnum {
-  USER = '/user',
-  USER_INSERT = '/user/insert',
+  ADMIN = '/admin',
+  ADMIN_INSERT = '/admin/insert',
+  USER = '/user'
 }
 
 export const userScreens: RouteObject[] = [
   {
-    path: UserRoutesEnum.USER,
-    element: <User />,
+    path: UserRoutesEnum.ADMIN,
+    element: <Admin />,
   },
   {
-    path: UserRoutesEnum.USER_INSERT,
-    element: <UserInsert />,
+    path: UserRoutesEnum.ADMIN_INSERT,
+    element: <AdminInsert />,
   },
+  {
+    path: UserRoutesEnum.USER,
+    element: <User />,
+  }
 ];

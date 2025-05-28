@@ -6,12 +6,12 @@ import {
   DisplayFlexJustifyRight,
 } from '../../../shared/components/styles/display.styled';
 import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
-import { useUserInsert } from '../hooks/useUserInsert';
+import { useAdminInsert } from '../hooks/useAdminInsert';
 import { UserRoutesEnum } from '../routes';
 
-const UserInsert = () => {
+const AdminInsert = () => {
   const { user, disabledButton, handleCancelInsert, handleInsertAdmin, handleOnChangeInput } =
-    useUserInsert();
+    useAdminInsert();
 
   return (
     <Screen
@@ -20,8 +20,8 @@ const UserInsert = () => {
           name: 'HOME',
         },
         {
-          name: 'USUÁRIOS',
-          navigateTo: UserRoutesEnum.USER,
+          name: 'ADMINISTRADORES',
+          navigateTo: UserRoutesEnum.ADMIN,
         },
         {
           name: 'INSERIR',
@@ -84,4 +84,4 @@ const UserInsert = () => {
   );
 };
 
-export default UserInsert;
+export default AdminInsert;

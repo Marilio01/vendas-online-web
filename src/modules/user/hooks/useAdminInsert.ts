@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { URL_USER } from '../../../shared/constants/urls';
+import { URL_USER_ADMIN } from '../../../shared/constants/urls';
 import { InsertUser } from '../../../shared/dtos/InsertUser.dto';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { UserRoutesEnum } from '../routes';
 
-export const useUserInsert = () => {
+export const useAdminInsert = () => {
   const navigate = useNavigate();
   const { request, loading } = useRequests();
   const [disabledButton, setDisabledButton] = useState(true);
@@ -35,13 +35,13 @@ export const useUserInsert = () => {
   };
 
   const handleCancelInsert = () => {
-    navigate(UserRoutesEnum.USER);
+    navigate(UserRoutesEnum.ADMIN);
   };
 
   const handleInsertAdmin = async () => {
-    const result = await request(URL_USER, MethodsEnum.POST, undefined, user);
+    const result = await request(URL_USER_ADMIN, MethodsEnum.POST, undefined, user);
     if (result) {
-      navigate(UserRoutesEnum.USER);
+      navigate(UserRoutesEnum.ADMIN);
     }
   };
 

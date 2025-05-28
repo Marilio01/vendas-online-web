@@ -1,3 +1,3 @@
-import User from './screens/User';
+import User from './screens/Admin';
 
 export default User;

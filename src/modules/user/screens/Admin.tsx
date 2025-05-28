@@ -1,8 +1,9 @@
 import Loading from '../../../shared/components/loading/Loading';
 import { Input } from 'antd';
 import { ColumnsType } from 'antd/es/table';
+import Button from '../../../shared/components/buttons/button/Button';
 import Screen from '../../../shared/components/screen/Screen';
-import { useUser } from '../hooks/useUser';
+import { useAdmin } from '../hooks/useAdmin';
 import {
   DisplayFlexJustifyBetween,
   DisplayFlexJustifyCenter,
@@ -12,6 +13,11 @@ import Table from '../../../shared/components/table/Table';
 import { insertMaskInCpf } from '../../../shared/functions/cpf';
 import { insertMaskInPhone } from '../../../shared/functions/phone';
 import { UserType } from '../../login/types/UserType';
+import { useMemo } from 'react';
+import { UserTypeEnum } from '../../../shared/enums/userType.enum';
+import { getUserInfoByToken } from '../../../shared/functions/connection/auth';
+import { useNavigate } from 'react-router-dom';
+import { UserRoutesEnum } from '../routes';
 
 const { Search } = Input;
 
@@ -48,8 +54,15 @@ const columns: ColumnsType<UserType> = [
   },
 ];
 
-const User = () => {
-  const { users, loading, handleOnChangeSearch } = useUser();
+const Admin = () => {
+  const { users, loading, handleOnChangeSearch } = useAdmin();
+  const navigate = useNavigate();
+
+  const userToken = useMemo(() => getUserInfoByToken(), []);
+
+  const handleGoToInsertAdmin = () => {
+    navigate(UserRoutesEnum.ADMIN_INSERT);
+  };
 
   return (
     <Screen
@@ -58,7 +71,7 @@ const User = () => {
           name: 'HOME',
         },
         {
-          name: 'USUÁRIOS',
+          name: 'ADMINISTRADORES',
         },
       ]}
     >
@@ -70,7 +83,14 @@ const User = () => {
         <>
           <DisplayFlexJustifyBetween margin="0px 0px 16px 0px">
             <LimitedContainer width={240}>
-              <Search placeholder="Buscar usuário" onSearch={handleOnChangeSearch} enterButton />
+              <Search placeholder="Buscar Adiministrador" onSearch={handleOnChangeSearch} enterButton />
+            </LimitedContainer>
+            <LimitedContainer width={180}>
+              {userToken?.typeUser === UserTypeEnum.Root && (
+                <Button type="primary" onClick={handleGoToInsertAdmin}>
+                  Inserir Admin
+                </Button>
+              )}
             </LimitedContainer>
           </DisplayFlexJustifyBetween>
           <Table columns={columns} dataSource={users} />
@@ -80,4 +100,4 @@ const User = () => {
   );
 };
 
-export default User;
+export default Admin;
