@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Dropdown, Typography, Drawer, List } from 'antd';
+import { Modal, Dropdown, Typography, Drawer, List, Button } from 'antd'; // Adicionado Button
 import {
   HeaderContainer,
   LeftSection,
@@ -33,7 +33,7 @@ const HeaderCliente = () => {
   const [nomeCliente, setNomeCliente] = useState('');
 
   const { cart } = useCartReducer();
-  useCart(); // <-- 2. CHAME O HOOK AQUI NO TOPO DO COMPONENTE
+  useCart(); 
 
   const cartItems = Array.isArray(cart) ? cart : [];
 
@@ -54,6 +54,11 @@ const HeaderCliente = () => {
   const handleLogout = () => {
     localStorage.removeItem('nomeCliente');
     logout(navigate);
+  };
+  
+  const handleGoToCheckout = () => {
+    setOpenCart(false);
+    navigate('/checkout');
   };
 
   const menuItems = [
@@ -139,6 +144,17 @@ const HeaderCliente = () => {
         onClose={() => setOpenCart(false)}
         open={openCart}
         width={350}
+        footer={
+          cartItems.length > 0 && (
+            <Button 
+              type="primary" 
+              style={{ width: '100%' }}
+              onClick={handleGoToCheckout}
+            >
+              Finalizar Compra
+            </Button>
+          )
+        }
       >
         {cartItems.length === 0 ? (
           <p>Carrinho vazio</p>
