@@ -1,10 +1,11 @@
-import Header from "../../../shared/components/header/Header";
+import Header from "../../../shared/components/headerCliente/HeaderCliente";
+import ClientProduct from "../../product/screens/ClientProduct";
 
 const UsuarioDisplay = () => {
   return (
     <div>
       <Header />
-      <div>Display</div>
+      <ClientProduct />
     </div>
   );
 };
