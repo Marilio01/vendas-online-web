@@ -23,3 +23,5 @@ export const URL_CATEGORY_ID = 'http://localhost:8080/category/{categoryId}';
 export const URL_ORDER_ID = 'http://localhost:8080/order/{orderId}';
 
 export const URL_ORDER_ALL = 'http://localhost:8080/order/all';
+
+export const URL_CART = 'http://localhost:8080/cart';
