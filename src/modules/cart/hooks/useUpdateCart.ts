@@ -20,7 +20,7 @@ export const useUpdateCart = () => {
     };
 
     await request(
-      `${URL_CART}/${cartItem.id}`,
+      URL_CART, 
       MethodsEnum.PATCH,
       onSuccess,
       { productId: cartItem.product.id, amount: newAmount },

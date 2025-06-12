@@ -24,7 +24,6 @@ export const useRequests = () => {
     message?: string,
   ): Promise<T | undefined> => {
 
-    console.log(`NOVO REQUEST -> Método Recebido:`, method, `| É igual a MethodsEnum.PATCH?`, method === MethodsEnum.PATCH);
     setLoading(true);
     const returnObject: T | undefined = await ConnectionAPI.connect<T>(url, method, body)
       .then((result) => {
