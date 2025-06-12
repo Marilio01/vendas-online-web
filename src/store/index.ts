@@ -18,6 +18,7 @@ import globalReducer from './reducers/globalReducer';
 import orderReducer from './reducers/orderReducer';
 import userReducer from './reducers/userReducer';
 import cartReducer from './reducers/cartReducer';
+import addressReducer from './reducers/addressReducer';
 
 const rootReducer = combineReducers({
   categoryReducer,
@@ -26,12 +27,13 @@ const rootReducer = combineReducers({
   productReducer,
   userReducer,
   cartReducer,
+  addressReducer,
 });
 
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['cartReducer', 'userReducer'], 
+  whitelist: ['cartReducer', 'userReducer', 'addressReducer'], 
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

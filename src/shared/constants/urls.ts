@@ -27,3 +27,9 @@ export const URL_ORDER_ALL = 'http://localhost:8080/order/all';
 export const URL_CART = 'http://localhost:8080/cart';
 
 export const URL_CART_DELETE = 'http://localhost:8080/cart/product';
+
+export const URL_ADDRESS = 'http://localhost:8080/address';
+
+export const URL_STATE = 'http://localhost:8080/state';
+
+export const URL_CITY = 'http://localhost:8080/city';
