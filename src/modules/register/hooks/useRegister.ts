@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { URL_USER } from '../../../shared/constants/urls';
 import { InsertUser } from '../../../shared/dtos/InsertUser.dto';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';

@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../hooks";
 import { CartType } from "../../../shared/types/CartType";
-import { setCartAction, updateItemAmountAction } from "."; // Importe a nova action
+import { setCartAction, updateItemAmountAction } from "."; 
 
 export const useCartReducer = () => {
   const dispatch = useDispatch();
@@ -15,7 +15,6 @@ export const useCartReducer = () => {
     }
   };
 
-  // ### ADICIONE ESTA NOVA FUNÇÃO AQUI ###
   const updateItemAmount = (id: number, amount: number) => {
     dispatch(updateItemAmountAction({ id, amount }));
   };
@@ -23,6 +22,6 @@ export const useCartReducer = () => {
   return {
     cart,
     setCarts,
-    updateItemAmount, // Exponha a nova função
+    updateItemAmount,
   };
 };

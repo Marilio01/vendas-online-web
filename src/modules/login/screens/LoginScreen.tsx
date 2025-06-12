@@ -38,6 +38,12 @@ const LoginScreen = () => {
     });
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   return (
     <ContainerLoginScreen>
       <ContainerLogin>
@@ -50,6 +56,7 @@ const LoginScreen = () => {
             title="USUÁRIO"
             margin="32px 0px 0px"
             onChange={handleEmail}
+            onKeyDown={handleKeyDown}
             value={email}
             placeholder="Digite seu usuário"
           />
@@ -58,6 +65,7 @@ const LoginScreen = () => {
             title="SENHA"
             margin="32px 0px 0px"
             onChange={handlePassword}
+            onKeyDown={handleKeyDown}
             value={password}
             placeholder="Digite sua senha"
           />

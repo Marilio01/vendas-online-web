@@ -10,6 +10,7 @@ import { ERROR_INVALID_PASSWORD } from '../constants/errosStatus';
 import { URL_AUTH } from '../constants/urls';
 import { setAuthorizationToken } from '../functions/connection/auth';
 import { FirstScreenRoutesEnum } from '../../modules/firstScreen/routes';
+import { MethodsEnum } from '../enums/methods.enum';
 
 export const useRequests = () => {
   const [loading, setLoading] = useState(false);
@@ -22,6 +23,8 @@ export const useRequests = () => {
     body?: unknown,
     message?: string,
   ): Promise<T | undefined> => {
+
+    console.log(`NOVO REQUEST -> Método Recebido:`, method, `| É igual a MethodsEnum.PATCH?`, method === MethodsEnum.PATCH);
     setLoading(true);
     const returnObject: T | undefined = await ConnectionAPI.connect<T>(url, method, body)
       .then((result) => {
@@ -33,12 +36,26 @@ export const useRequests = () => {
         }
         return result;
       })
-      .catch((error: Error) => {
-        setNotification(error.message, 'error');
-        return undefined;
-      });
-    setLoading(false);
+      .catch((error: any) => {
+        if (
+          error?.response?.status === 404 &&
+          (method === MethodsEnum.PATCH || method === MethodsEnum.DELETE)
+        ) {
+          console.warn('Item não encontrado no backend (404). Re-sincronizando o estado.');
+          
+          if (saveGlobal) {
+            saveGlobal({} as T);
+          }
+          return undefined;
 
+        } else {
+          const errorMessage = error?.response?.data?.message || error.message;
+          setNotification(errorMessage, 'error');
+          return undefined;
+        }
+      });
+      
+    setLoading(false);
     return returnObject;
   };
 
@@ -49,6 +66,7 @@ export const useRequests = () => {
       .then((result) => {
         setUser(result.user);
         setAuthorizationToken(result.accessToken);
+        localStorage.setItem('nomeCliente', result.user.name);
         navigate(FirstScreenRoutesEnum.FIRST_SCREEN);
         return result;
       })
