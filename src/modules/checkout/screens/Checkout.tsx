@@ -1,79 +1,104 @@
+import { useEffect, useState } from 'react';
 import { Button, Card, Col, List, Row, Typography } from 'antd';
-import { HomeOutlined, CheckOutlined } from '@ant-design/icons';
-import { CheckoutContainer, CheckoutTitle } from '../styles/Checkout.styles'; 
+import { CheckOutlined } from '@ant-design/icons';
+import { useAddress } from '../../address/hooks/useAddress';
+import { CheckoutContainer, CheckoutTitle } from '../styles/Checkout.styles';
 import { useCartReducer } from '../../../store/reducers/cartReducer/useCartReducer';
 import { convertNumberToMoney } from '../../../shared/functions/money';
+import AddressFormModal from '../../address/screens/AddressFormModal';
+import AddressList from '../../address/screens/AddressList';
 
 const Checkout = () => {
   const { cart } = useCartReducer();
-  const cartItems = Array.isArray(cart) ? cart : [];
+  const { addresses, fetchAddresses } = useAddress(); 
+    console.log('ENDEREÇOS NO CHECKOUT:', addresses); 
 
+
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>();
+
+  const cartItems = Array.isArray(cart) ? cart : [];
   const total = cartItems.reduce(
     (acc, item) => acc + (item.product.price || 0) * (item.amount ?? 1),
     0,
   );
 
-  const handleAddAddress = () => {
-    console.log('Botão "Adicionar Endereço" clicado');
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const handleAddAddressSuccess = () => {
+    setIsAddressModalOpen(false);
+    fetchAddresses(); 
   };
-  
+
   const handlePlaceOrder = () => {
-    console.log('Botão "Fechar Pedido" clicado');
+    if (!selectedAddressId) {
+      alert('Por favor, selecione um endereço de entrega.');
+      return;
+    }
+    console.log('Pedido finalizado com o endereço ID:', selectedAddressId);
   };
 
   return (
-    <CheckoutContainer>
-      <CheckoutTitle level={2}>Revisão do Pedido</CheckoutTitle>
-      <Row gutter={[24, 24]}>
-        <Col xs={24} md={16}>
-          <Card>
-            <Button 
-              type="dashed" 
-              icon={<HomeOutlined />} 
-              style={{ marginBottom: '24px' }}
-              onClick={handleAddAddress}
-            >
-              Adicionar Endereço
-            </Button>
-            
-            <List
-              header={<Typography.Title level={5}>Itens no Carrinho</Typography.Title>}
-              dataSource={cartItems}
-              renderItem={(item) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<img src={item.product.image} alt={item.product.name} width={60} style={{ borderRadius: 4 }} />}
-                    title={`${item.product.name} (x${item.amount})`}
-                    description={convertNumberToMoney(item.product.price)}
-                  />
-                  <div>
-                    {convertNumberToMoney(item.product.price * item.amount)}
-                  </div>
-                </List.Item>
-              )}
+    <>
+      <AddressFormModal 
+        open={isAddressModalOpen}
+        onClose={() => setIsAddressModalOpen(false)}
+        onSuccess={handleAddAddressSuccess}
+      />
+      <CheckoutContainer>
+        <CheckoutTitle level={2}>Revisão do Pedido</CheckoutTitle>
+        <Row gutter={[24, 24]}>
+          <Col xs={24} md={16}>
+            <AddressList
+              addresses={addresses}
+              selectedAddressId={selectedAddressId}
+              onSelectAddress={setSelectedAddressId}
+              onAddNewAddress={() => setIsAddressModalOpen(true)}
             />
-          </Card>
-        </Col>
 
-        <Col xs={24} md={8}>
-          <Card title="Resumo do Pedido">
-            <Row justify="space-between">
-              <Typography.Title level={4}>Total do Pedido</Typography.Title>
-              <Typography.Title level={4}>{convertNumberToMoney(total)}</Typography.Title>
-            </Row>
-            <Button
-              type="primary"
-              size="large"
-              icon={<CheckOutlined />}
-              style={{ width: '100%', marginTop: '24px' }}
-              onClick={handlePlaceOrder}
-            >
-              Fechar Pedido
-            </Button>
-          </Card>
-        </Col>
-      </Row>
-    </CheckoutContainer>
+            <Card style={{ marginTop: '24px' }}>
+              <List
+                header={<Typography.Title level={5}>Itens no Carrinho</Typography.Title>}
+                dataSource={cartItems}
+                renderItem={(item) => (
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<img src={item.product.image} alt={item.product.name} width={60} style={{ borderRadius: 4 }} />}
+                      title={`${item.product.name} (x${item.amount})`}
+                      description={convertNumberToMoney(item.product.price)}
+                    />
+                    <div>
+                      {convertNumberToMoney(item.product.price * item.amount)}
+                    </div>
+                  </List.Item>
+                )}
+              />
+            </Card>
+          </Col>
+
+          <Col xs={24} md={8}>
+            <Card title="Resumo do Pedido">
+              <Row justify="space-between">
+                <Typography.Title level={4}>Total do Pedido</Typography.Title>
+                <Typography.Title level={4}>{convertNumberToMoney(total)}</Typography.Title>
+              </Row>
+              <Button
+                type="primary"
+                size="large"
+                icon={<CheckOutlined />}
+                style={{ width: '100%', marginTop: '24px' }}
+                onClick={handlePlaceOrder}
+                disabled={!selectedAddressId}
+              >
+                Fechar Pedido
+              </Button>
+            </Card>
+          </Col>
+        </Row>
+      </CheckoutContainer>
+    </>
   );
 };
 
