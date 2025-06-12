@@ -25,3 +25,5 @@ export const URL_ORDER_ID = 'http://localhost:8080/order/{orderId}';
 export const URL_ORDER_ALL = 'http://localhost:8080/order/all';
 
 export const URL_CART = 'http://localhost:8080/cart';
+
+export const URL_CART_DELETE = 'http://localhost:8080/cart/product';
