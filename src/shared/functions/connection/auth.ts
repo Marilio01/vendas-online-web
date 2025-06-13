@@ -6,6 +6,8 @@ import { getItemStorage, removeItemStorage, setItemStorage } from './storageProx
 import { URL_USER } from '../../constants/urls';
 import { connectionAPIGet } from './connectionAPI';
 import { UserTokenType } from '../../../modules/login/types/UserTokenType';
+import { UserTypeEnum } from '../../enums/userType.enum'; 
+import { UsuarioDisplayRoutesEnum } from '../../../modules/usuarioDisplay/routes';
 
 export const unsetAuthorizationToken = () => removeItemStorage(AUTHORIZATION_KEY);
 
@@ -46,4 +48,24 @@ export const verifyLoggedIn = async () => {
 export const logout = (navigate: NavigateFunction) => {
   unsetAuthorizationToken();
   navigate(LoginRoutesEnum.LOGIN);
+};
+
+export const createAuthLoader = (allowedRoles?: UserTypeEnum[]) => {
+  return () => {
+    const token = getAuthorizationToken();
+
+    if (!token) {
+      throw redirect(LoginRoutesEnum.LOGIN);
+    }
+
+    if (allowedRoles && allowedRoles.length > 0) {
+      const userInfo = getUserInfoByToken();
+
+      if (!userInfo || !allowedRoles.includes(userInfo.typeUser)) {
+        throw redirect(UsuarioDisplayRoutesEnum.USUARIO_DISPLAY); 
+      }
+    }
+    
+    return null;
+  };
 };

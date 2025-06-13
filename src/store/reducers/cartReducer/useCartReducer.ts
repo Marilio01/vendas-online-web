@@ -19,9 +19,14 @@ export const useCartReducer = () => {
     dispatch(updateItemAmountAction({ id, amount }));
   };
 
+  const clearCart = () => {
+    dispatch(setCartAction([]));
+  };
+
   return {
     cart,
     setCarts,
     updateItemAmount,
+    clearCart,
   };
 };

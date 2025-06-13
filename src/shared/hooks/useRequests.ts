@@ -23,7 +23,6 @@ export const useRequests = () => {
     body?: unknown,
     message?: string,
   ): Promise<T | undefined> => {
-
     setLoading(true);
     const returnObject: T | undefined = await ConnectionAPI.connect<T>(url, method, body)
       .then((result) => {
@@ -38,17 +37,11 @@ export const useRequests = () => {
       .catch((error: any) => {
         if (
           error?.response?.status === 404 &&
-          (method === MethodsEnum.PATCH || method === MethodsEnum.DELETE)
+          (method === MethodsEnum.PATCH || method === MethodsEnum.DELETE || method === MethodsEnum.GET)
         ) {
-          console.warn('Item não encontrado no backend (404). Re-sincronizando o estado.');
-          
-          if (saveGlobal) {
-            saveGlobal({} as T);
-          }
           return undefined;
-
         } else {
-          const errorMessage = error?.response?.data?.message || error.message;
+          const errorMessage = error?.response?.data?.message || 'Erro desconhecido ao processar sua solicitação.';
           setNotification(errorMessage, 'error');
           return undefined;
         }

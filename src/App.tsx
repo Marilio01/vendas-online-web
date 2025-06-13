@@ -1,15 +1,15 @@
 import type { Router as RemixRouter } from '@remix-run/router';
 import { createBrowserRouter, RouteObject, RouterProvider } from 'react-router-dom';
-import { firstScreenRoutes } from './modules/firstScreen/routes';
-import { loginRoutes } from './modules/login/routes';
-import { productScreens } from './modules/product/routes';
 import { useNotification } from './shared/hooks/useNotification';
-import { getAuthorizationToken, verifyLoggedIn } from './shared/functions/connection/auth';
 import { useGlobalReducer } from './store/reducers/globalReducer/useGlobalReducer';
 import { useRequests } from './shared/hooks/useRequests';
 import { useEffect } from 'react';
+import { createAuthLoader, getAuthorizationToken } from './shared/functions/connection/auth';
 import { URL_USER } from './shared/constants/urls';
 import { MethodsEnum } from './shared/enums/methods.enum';
+import { UserTypeEnum } from './shared/enums/userType.enum';
+import { loginRoutes } from './modules/login/routes';
+import { productScreens } from './modules/product/routes';
 import { categoryScreens } from './modules/category/routes';
 import { orderScreens } from './modules/orders/routes';
 import { userScreens } from './modules/user/routes';
@@ -18,25 +18,46 @@ import { UsuarioDisplayRoutes } from './modules/usuarioDisplay/routes';
 import { changePasswordRoutes } from './modules/changePassword/routes';
 import { cartScreens } from './modules/cart/routes';
 import { checkoutScreens } from './modules/checkout/routes';
+import { firstScreenRoutes } from './modules/firstScreen/routes';
+import { paymentScreens } from './modules/payment/routes';
+import { orderClientScreens } from './modules/orderClient/routes';
+import { clientScreens } from './modules/client/routes';
 
-const routes: RouteObject[] = [...loginRoutes];
-const routesLoggedIn: RouteObject[] = [
-  ...productScreens,
-  ...categoryScreens,
-  ...firstScreenRoutes,
-  ...userScreens,
-  ...orderScreens,
-  ...registerRoutes,
-  ...UsuarioDisplayRoutes,
-  ...changePasswordRoutes,
-  ...cartScreens,
-  ...checkoutScreens
+
+const publicRoutes: RouteObject[] = [
+    ...loginRoutes, 
+    ...registerRoutes
+];
+
+const adminRoutes: RouteObject[] = [
+    ...productScreens,
+    ...categoryScreens,
+    ...userScreens,
+    ...orderScreens
 ].map((route) => ({
-  ...route,
-  loader: () => verifyLoggedIn,
+    ...route,
+    loader: createAuthLoader([UserTypeEnum.Admin, UserTypeEnum.Root]),
 }));
 
-const router: RemixRouter = createBrowserRouter([...routes, ...routesLoggedIn]);
+const commonUserRoutes: RouteObject[] = [
+    ...firstScreenRoutes,
+    ...UsuarioDisplayRoutes,
+    ...changePasswordRoutes,
+    ...cartScreens,
+    ...checkoutScreens,
+    ...paymentScreens,
+    ...orderClientScreens,
+    ...clientScreens,
+].map((route) => ({
+    ...route,
+    loader: createAuthLoader(),
+}));
+
+const router: RemixRouter = createBrowserRouter([
+    ...publicRoutes,
+    ...adminRoutes,
+    ...commonUserRoutes,
+]);
 
 function App() {
   const { contextHolder } = useNotification();
@@ -48,7 +69,7 @@ function App() {
     if (token) {
       request(URL_USER, MethodsEnum.GET, setUser);
     }
-  }, []);
+  }, [request, setUser]);
 
   return (
     <>
