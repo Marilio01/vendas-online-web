@@ -5,6 +5,8 @@ import Table from '../../../shared/components/table/Table';
 import { OrderType } from '../../../shared/types/OrderType';
 import { useOrder } from '../hooks/useOrder';
 import { OrderRoutesEnum } from '../routes';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const columns: ColumnsType<OrderType> = [
   {
@@ -17,7 +19,7 @@ const columns: ColumnsType<OrderType> = [
     title: 'Data',
     dataIndex: 'date',
     key: 'date',
-    render: (text) => <a>{text}</a>,
+    render: (text) => <a>{text ? format(new Date(text), "EEEE, dd/MM/yyyy HH:mm", { locale: ptBR }) : '-'}</a>,
   },
   {
     title: 'Usuário',
