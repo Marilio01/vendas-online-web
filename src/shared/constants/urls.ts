@@ -33,3 +33,5 @@ export const URL_ADDRESS = 'http://localhost:8080/address';
 export const URL_STATE = 'http://localhost:8080/state';
 
 export const URL_CITY = 'http://localhost:8080/city';
+
+export const URL_ORDER = 'http://localhost:8080/order';

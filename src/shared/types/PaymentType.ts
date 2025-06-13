@@ -8,4 +8,5 @@ export interface PaymentType {
   finalPrice: number;
   type: string;
   paymentStatus?: PaymentStatusType;
+  amountPayments?: number;
 }
