@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import SVGLogo from '../icons/SVGLogo';
 import { Input } from 'antd';
+import { SettingOutlined } from '@ant-design/icons'; // Importa o SettingOutlined
 
 export const SearchInput = styled(Input)`
   width: 100%;
@@ -102,6 +103,26 @@ export const RightSection = styled.div`
 
   @media (max-width: 480px) {
     gap: 12px;
+  }
+`;
+
+export const AdminPanelIcon = styled(SettingOutlined)`
+  font-size: 26px;
+  color: #f0f0f0;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+
+  &:hover {
+    color: #ffc107; // Uma cor de destaque, como amarelo
+    transform: rotate(45deg);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 22px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 20px;
   }
 `;
 

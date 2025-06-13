@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Dropdown, Typography, Drawer, List, Button } from 'antd'; // Adicionado Button
+import { Modal, Dropdown, Typography, Drawer, List, Button } from 'antd';
 import {
   HeaderContainer,
   LeftSection,
@@ -11,6 +11,7 @@ import {
   CartIcon,
   UserInfo,
   SearchInput,
+  AdminPanelIcon,
 } from './headerCliente.style';
 import {
   SearchOutlined,
@@ -20,11 +21,13 @@ import {
   LogoutOutlined,
   LockOutlined,
   DownOutlined,
+  IdcardOutlined,
 } from '@ant-design/icons';
-import { logout } from '../../functions/connection/auth';
+import { getUserInfoByToken, logout } from '../../functions/connection/auth';
 import { useCartReducer } from '../../../store/reducers/cartReducer/useCartReducer';
 import { convertNumberToMoney } from '../../../shared/functions/money';
 import { useCart } from '../../../modules/cart/hooks/useCart';
+import { UserTypeEnum } from '../../enums/userType.enum';
 
 const HeaderCliente = () => {
   const navigate = useNavigate();
@@ -32,10 +35,15 @@ const HeaderCliente = () => {
   const [openCart, setOpenCart] = useState(false);
   const [nomeCliente, setNomeCliente] = useState('');
 
+  const userToken = useMemo(() => getUserInfoByToken(), []);
   const { cart } = useCartReducer();
   useCart(); 
 
   const cartItems = Array.isArray(cart) ? cart : [];
+
+  const handleGoToAdminProducts = () => {
+    navigate('/product'); 
+  };
 
   useEffect(() => {
     const nome = localStorage.getItem('nomeCliente');
@@ -63,12 +71,14 @@ const HeaderCliente = () => {
 
   const menuItems = [
     { key: 'compras', icon: <ShoppingOutlined />, label: 'Ver Compras' },
+    { key: 'dados', icon: <IdcardOutlined />, label: 'Meus Dados' },
     { key: 'senha', icon: <LockOutlined />, label: 'Alterar Senha' },
     { key: 'sair', icon: <LogoutOutlined />, label: 'Sair' },
   ];
 
   const onMenuClick = ({ key }: { key: string }) => {
     if (key === 'compras') navigate('/compras');
+    else if (key === 'dados') navigate('/meus-dados');
     else if (key === 'senha') navigate('/changePassword');
     else if (key === 'sair') showLogoutModal();
   };
@@ -101,6 +111,12 @@ const HeaderCliente = () => {
         </CenterSection>
 
         <RightSection>
+          {(userToken?.typeUser === UserTypeEnum.Root || userToken?.typeUser === UserTypeEnum.Admin) ? (
+            <AdminPanelIcon
+              onClick={handleGoToAdminProducts}
+              title="Painel do Administrador"
+            />
+          ) : null}
           <CartIcon onClick={() => setOpenCart(true)}>
             <ShoppingCartOutlined />
             {cart.length > 0 && (
