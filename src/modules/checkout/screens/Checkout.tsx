@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Card, Col, List, Row, Typography } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import { useAddress } from '../../address/hooks/useAddress';
+import AddressFormModal from '../../address/screens/AddressFormModal';
+import AddressList from '../../address/screens/AddressList';
 import { CheckoutContainer, CheckoutTitle } from '../styles/Checkout.styles';
 import { useCartReducer } from '../../../store/reducers/cartReducer/useCartReducer';
 import { convertNumberToMoney } from '../../../shared/functions/money';
-import AddressFormModal from '../../address/screens/AddressFormModal';
-import AddressList from '../../address/screens/AddressList';
+
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const { cart } = useCartReducer();
-  const { addresses, fetchAddresses } = useAddress(); 
-    console.log('ENDEREÇOS NO CHECKOUT:', addresses); 
-
+  const { addresses, fetchAddresses } = useAddress();
 
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>();
@@ -29,15 +30,20 @@ const Checkout = () => {
 
   const handleAddAddressSuccess = () => {
     setIsAddressModalOpen(false);
-    fetchAddresses(); 
+    fetchAddresses();
   };
 
-  const handlePlaceOrder = () => {
+  const handleProceedToPayment = () => {
     if (!selectedAddressId) {
-      alert('Por favor, selecione um endereço de entrega.');
+      alert('Por favor, selecione um endereço de entrega para continuar.');
       return;
     }
-    console.log('Pedido finalizado com o endereço ID:', selectedAddressId);
+    navigate('/payment', {
+      state: {
+        addressId: selectedAddressId,
+        total: total,
+      },
+    });
   };
 
   return (
@@ -47,6 +53,7 @@ const Checkout = () => {
         onClose={() => setIsAddressModalOpen(false)}
         onSuccess={handleAddAddressSuccess}
       />
+
       <CheckoutContainer>
         <CheckoutTitle level={2}>Revisão do Pedido</CheckoutTitle>
         <Row gutter={[24, 24]}>
@@ -89,10 +96,10 @@ const Checkout = () => {
                 size="large"
                 icon={<CheckOutlined />}
                 style={{ width: '100%', marginTop: '24px' }}
-                onClick={handlePlaceOrder}
+                onClick={handleProceedToPayment}
                 disabled={!selectedAddressId}
               >
-                Fechar Pedido
+                Prosseguir para Pagamento
               </Button>
             </Card>
           </Col>
