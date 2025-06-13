@@ -6,7 +6,7 @@ import AdminInsert from './screens/AdminInsert';
 export enum UserRoutesEnum {
   ADMIN = '/admin',
   ADMIN_INSERT = '/admin/insert',
-  USER = '/user'
+  USER = '/user',
 }
 
 export const userScreens: RouteObject[] = [
@@ -21,5 +21,5 @@ export const userScreens: RouteObject[] = [
   {
     path: UserRoutesEnum.USER,
     element: <User />,
-  }
+  },
 ];
