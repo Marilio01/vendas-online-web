@@ -1,98 +1,141 @@
-// src/modules/address/components/AddressFormModal.tsx
+import { useEffect } from 'react';
+import { Modal } from 'antd';
 
-import { useEffect, useState } from 'react';
-import { Modal, Form, Input, Select } from 'antd';
 import { useAddress } from '../hooks/useAddress';
 import { useLocation } from '../../location/hooks/useLocation';
-import { FullWidthButton, FullWidthInputNumber } from '../styles/AddressFormModal.styles';
+import { AddressType } from '../../../shared/types/AddressType';
 
+import Input from '../../../shared/components/inputs/input/Input';
+import Select from '../../../shared/components/inputs/select/Select';
+import Button from '../../../shared/components/buttons/button/Button';
+import { useAddressForm } from '../hooks/useAdressForm';
 
 interface AddressFormModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  addressToEdit?: AddressType;
 }
 
-interface FormData {
-  cep: string;
-  numberAddress: number;
-  complement: string;
-  stateId: number;
-  cityId: number;
-}
-
-const AddressFormModal = ({ open, onClose, onSuccess }: AddressFormModalProps) => {
-  const [form] = Form.useForm<FormData>();
+const AddressFormModal = ({ open, onClose, onSuccess, addressToEdit }: AddressFormModalProps) => {
   const { createAddress, loading: addressLoading } = useAddress();
   const { states, cities, fetchStates, fetchCities, loading: locationLoading } = useLocation();
-  const [selectedState, setSelectedState] = useState<number | undefined>();
+  const { 
+    address, 
+    errors, 
+    disabledButton, 
+    handleOnChangeInput, 
+    handleChangeSelect, 
+    handleOnBlur,
+    resetForm,
+  } = useAddressForm(addressToEdit);
 
   useEffect(() => {
     if (open) {
       fetchStates();
+      if (addressToEdit?.city?.state?.id) {
+        fetchCities(addressToEdit.city.state.id);
+      }
+    } else {
+      resetForm();
     }
-  }, [open]);
+  }, [open, fetchStates, resetForm, addressToEdit, fetchCities]);
 
   const handleStateChange = (stateId: number) => {
-    setSelectedState(stateId);
-    form.setFieldsValue({ cityId: undefined });
+    handleChangeSelect(stateId, 'stateId');
+    handleChangeSelect(undefined, 'cityId'); 
     fetchCities(stateId);
   };
 
-  const handleSubmit = async (data: FormData) => {
-    const { stateId, ...addressData } = data;
-    await createAddress(addressData);
-    form.resetFields();
+  const handleSubmit = async () => {
+    const body = {
+      cep: address.cep.replace(/\D/g, ''),
+      numberAddress: Number(address.numberAddress),
+      complement: address.complement.trim(),
+      cityId: address.cityId,
+    };
+
+    if (addressToEdit) {
+      await (addressToEdit.id, body);
+    } else {
+      await createAddress(body as any);
+    }
     onSuccess();
   };
 
   return (
     <Modal
-      title="Adicionar Novo Endereço"
+      title={addressToEdit ? 'Editar Endereço' : 'Adicionar Novo Endereço'}
       open={open}
       onCancel={onClose}
       footer={null}
       destroyOnClose
     >
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Form.Item label="CEP" name="cep" rules={[{ required: true, message: 'Por favor, insira o CEP!' }]}>
-          <Input placeholder="00000-000" />
-        </Form.Item>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <Input
+          title="CEP (apenas números)"
+          placeholder="00000000"
+          value={address.cep}
+          onChange={(e) => handleOnChangeInput(e, 'cep')}
+          onBlur={() => handleOnBlur('cep')}
+          errorMessage={errors.cep}
+          type="tel"
+          maxLength={8}
+        />
         
-        <Form.Item label="Estado" name="stateId" rules={[{ required: true, message: 'Por favor, selecione um estado!' }]}>
-          <Select placeholder="Selecione o estado" onChange={handleStateChange} loading={locationLoading}>
-            {states.map(state => (
-              <Select.Option key={state.id} value={state.id}>
-                {state.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <Select
+          title="Estado"
+          placeholder="Selecione o estado"
+          value={address.stateId}
+          onChange={handleStateChange}
+          onBlur={() => handleOnBlur('stateId')}
+          loading={locationLoading}
+          options={states.map(state => ({ value: state.id, label: state.name }))}
+          errorMessage={errors.stateId}
+        />
 
-        <Form.Item label="Cidade" name="cityId" rules={[{ required: true, message: 'Por favor, selecione uma cidade!' }]}>
-          <Select placeholder="Selecione a cidade" disabled={!selectedState || cities.length === 0} loading={locationLoading}>
-            {cities.map(city => (
-              <Select.Option key={city.id} value={city.id}>
-                {city.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <Select
+          title="Cidade"
+          placeholder="Selecione a cidade"
+          value={address.cityId}
+          onChange={(value) => handleChangeSelect(Number(value), 'cityId')}
+          onBlur={() => handleOnBlur('cityId')}
+          disabled={!address.stateId || cities.length === 0}
+          loading={locationLoading}
+          options={cities.map(city => ({ value: city.id, label: city.name }))}
+          errorMessage={errors.cityId}
+        />
+        
+        <Input
+          title="Complemento"
+          placeholder="Ex: Rua das Flores, Bairro Centro"
+          value={address.complement}
+          onChange={(e) => handleOnChangeInput(e, 'complement')}
+          onBlur={() => handleOnBlur('complement')}
+          errorMessage={errors.complement}
+        />
 
-        <Form.Item label="Número" name="numberAddress" rules={[{ required: true, message: 'Por favor, insira o número!' }]}>
-          <FullWidthInputNumber placeholder="Ex: 123" />
-        </Form.Item>
+        <Input
+          title="Número"
+          placeholder="Ex: 123"
+          type="tel"
+          maxLength={6}
+          value={address.numberAddress}
+          onChange={(e) => handleOnChangeInput(e, 'numberAddress')}
+          onBlur={() => handleOnBlur('numberAddress')}
+          errorMessage={errors.numberAddress}
+        />
         
-        <Form.Item label="Complemento" name="complement" rules={[{ required: true, message: 'Por favor, insira o complemento!' }]}>
-          <Input placeholder="Ex: Casa, Apartamento 101" />
-        </Form.Item>
-        
-        <Form.Item>
-          <FullWidthButton type="primary" htmlType="submit" loading={addressLoading}>
-            Salvar Endereço
-          </FullWidthButton>
-        </Form.Item>
-      </Form>
+        <Button
+          type="primary"
+          onClick={handleSubmit}
+          disabled={disabledButton || addressLoading}
+          loading={addressLoading}
+          style={{ width: '100%' }}
+        >
+          {addressToEdit ? 'Salvar Alterações' : 'Salvar Endereço'}
+        </Button>
+      </div>
     </Modal>
   );
 };
