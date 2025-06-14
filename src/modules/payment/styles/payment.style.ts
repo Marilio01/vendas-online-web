@@ -10,3 +10,10 @@ export const PaymentContainer = styled.div`
 export const PaymentCard = styled(Card)`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
+
+export const ButtonsContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+`;
