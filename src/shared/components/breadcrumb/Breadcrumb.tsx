@@ -1,5 +1,5 @@
-import { Breadcrumb as BreadcrumbAntd } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { Breadcrumb as AntdBreadcrumb } from 'antd';
+import { Link } from 'react-router-dom';
 
 export interface ListBreadcrumb {
   name: string;
@@ -11,24 +11,22 @@ interface BreadcrumbProps {
 }
 
 const Breadcrumb = ({ listBreadcrumb }: BreadcrumbProps) => {
-  const navigate = useNavigate();
-
-  const handleGoToClick = (navigateTo: string) => {
-    navigate(navigateTo);
-  };
 
   return (
-    <BreadcrumbAntd>
+    <AntdBreadcrumb style={{ marginBottom: '16px' }}>
+      <AntdBreadcrumb.Item>
+      </AntdBreadcrumb.Item>
+      
       {listBreadcrumb.map((breadcrumb, index) => (
-        <BreadcrumbAntd.Item key={`breadcrumb_${index}`}>
+        <AntdBreadcrumb.Item key={`breadcrumb_${index}`}>
           {breadcrumb.navigateTo ? (
-            <a onClick={() => handleGoToClick(breadcrumb.navigateTo || '')}>{breadcrumb.name}</a>
+            <Link to={breadcrumb.navigateTo}>{breadcrumb.name.toUpperCase()}</Link>
           ) : (
-            breadcrumb.name
+            <span>{breadcrumb.name.toUpperCase()}</span>
           )}
-        </BreadcrumbAntd.Item>
+        </AntdBreadcrumb.Item>
       ))}
-    </BreadcrumbAntd>
+    </AntdBreadcrumb>
   );
 };
 
