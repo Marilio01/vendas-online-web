@@ -100,7 +100,7 @@ export const useAdminInsert = () => {
     setUser((currentUser) => ({ ...currentUser, [name]: value }));
   };
 
-  const handleOnBlur = (event: React.FocusEvent<HTMLInputElement>, name: keyof InsertUser) => {
+  const handleOnBlur = (_: React.FocusEvent<HTMLInputElement>, name: keyof InsertUser) => {
     setTouchedFields(prev => ({ ...prev, [name]: true }));
   };
 
