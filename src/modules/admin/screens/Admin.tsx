@@ -17,7 +17,7 @@ import { useMemo } from 'react';
 import { UserTypeEnum } from '../../../shared/enums/userType.enum';
 import { getUserInfoByToken } from '../../../shared/functions/connection/auth';
 import { useNavigate } from 'react-router-dom';
-import { UserRoutesEnum } from '../routes';
+import { AdminRoutesEnum } from '../routes';
 
 const { Search } = Input;
 
@@ -61,7 +61,7 @@ const Admin = () => {
   const userToken = useMemo(() => getUserInfoByToken(), []);
 
   const handleGoToInsertAdmin = () => {
-    navigate(UserRoutesEnum.ADMIN_INSERT);
+    navigate(AdminRoutesEnum.ADMIN_INSERT);
   };
 
   return (

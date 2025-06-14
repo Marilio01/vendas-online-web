@@ -22,6 +22,7 @@ import { firstScreenRoutes } from './modules/firstScreen/routes';
 import { paymentScreens } from './modules/payment/routes';
 import { orderClientScreens } from './modules/orderClient/routes';
 import { clientScreens } from './modules/client/routes';
+import { adminScreens } from './modules/admin/routes';
 
 
 const publicRoutes: RouteObject[] = [
@@ -37,6 +38,13 @@ const adminRoutes: RouteObject[] = [
 ].map((route) => ({
     ...route,
     loader: createAuthLoader([UserTypeEnum.Admin, UserTypeEnum.Root]),
+}));
+
+const rootRoutes: RouteObject[] = [
+    ...adminScreens,
+].map((route) => ({
+    ...route,
+    loader: createAuthLoader([UserTypeEnum.Root]),
 }));
 
 const commonUserRoutes: RouteObject[] = [
@@ -55,6 +63,7 @@ const commonUserRoutes: RouteObject[] = [
 
 const router: RemixRouter = createBrowserRouter([
     ...publicRoutes,
+    ...rootRoutes,
     ...adminRoutes,
     ...commonUserRoutes,
 ]);

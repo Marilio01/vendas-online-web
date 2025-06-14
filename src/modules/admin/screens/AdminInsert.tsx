@@ -7,63 +7,80 @@ import {
 } from '../../../shared/components/styles/display.styled';
 import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
 import { useAdminInsert } from '../hooks/useAdminInsert';
-import { UserRoutesEnum } from '../routes';
+import { AdminRoutesEnum } from '../routes';
 
 const AdminInsert = () => {
-  const { user, disabledButton, handleCancelInsert, handleInsertAdmin, handleOnChangeInput } =
-    useAdminInsert();
+  const {
+    user,
+    disabledButton,
+    errors,
+    handleCancelInsert,
+    handleInsertAdmin,
+    handleOnChangeInput,
+    handleOnBlur,
+    loading,
+  } = useAdminInsert();
 
   return (
     <Screen
       listBreadcrumb={[
-        {
-          name: 'HOME',
-        },
-        {
-          name: 'ADMINISTRADORES',
-          navigateTo: UserRoutesEnum.ADMIN,
-        },
-        {
-          name: 'INSERIR',
-        },
+        { name: 'HOME' },
+        { name: 'ADMINISTRADORES', navigateTo: AdminRoutesEnum.ADMIN },
+        { name: 'INSERIR' },
       ]}
     >
       <DisplayFlexJustifyCenter>
         <LimitedContainer width={400}>
           <Input
-            value={user.name}
-            onChange={(event) => handleOnChangeInput(event, 'name')}
-            margin="0px 0px 16px 0px"
             title="Nome"
             placeholder="Nome"
+            value={user.name}
+            onChange={(event) => handleOnChangeInput(event, 'name')}
+            onBlur={(event) => handleOnBlur(event, 'name')}
+            margin="0px 0px 16px 0px"
+            errorMessage={errors?.name}
           />
           <Input
-            value={user.phone}
-            onChange={(event) => handleOnChangeInput(event, 'phone')}
-            margin="0px 0px 16px 0px"
             title="Telefone"
             placeholder="Telefone"
+            value={user.phone}
+            onChange={(event) => handleOnChangeInput(event, 'phone')}
+            onBlur={(event) => handleOnBlur(event, 'phone')}
+            margin="0px 0px 16px 0px"
+            type="tel"
+            maxLength={11}
+            errorMessage={errors?.phone}
           />
           <Input
-            value={user.email}
-            onChange={(event) => handleOnChangeInput(event, 'email')}
-            margin="0px 0px 16px 0px"
             title="Email"
             placeholder="Email"
+            value={user.email}
+            onChange={(event) => handleOnChangeInput(event, 'email')}
+            onBlur={(event) => handleOnBlur(event, 'email')}
+            margin="0px 0px 16px 0px"
+            type="email"
+            errorMessage={errors?.email}
           />
           <Input
+            title="CPF"
+            placeholder="CPF (apenas números)"
             value={user.cpf}
             onChange={(event) => handleOnChangeInput(event, 'cpf')}
+            onBlur={(event) => handleOnBlur(event, 'cpf')}
             margin="0px 0px 16px 0px"
-            title="CPF"
-            placeholder="CPF"
+            type="tel"
+            maxLength={11}
+            errorMessage={errors?.cpf}
           />
           <Input
-            value={user.password}
-            onChange={(event) => handleOnChangeInput(event, 'password')}
-            margin="0px 0px 16px 0px"
             title="Senha"
             placeholder="Senha"
+            value={user.password}
+            onChange={(event) => handleOnChangeInput(event, 'password')}
+            onBlur={(event) => handleOnBlur(event, 'password')}
+            margin="0px 0px 16px 0px"
+            type="password"
+            errorMessage={errors?.password}
           />
 
           <DisplayFlexJustifyRight>
@@ -73,8 +90,8 @@ const AdminInsert = () => {
               </Button>
             </LimitedContainer>
             <LimitedContainer width={120}>
-              <Button disabled={disabledButton} onClick={handleInsertAdmin} type="primary">
-                Inserir Admin
+              <Button loading={loading} disabled={disabledButton} onClick={handleInsertAdmin} type="primary">
+                Inserir
               </Button>
             </LimitedContainer>
           </DisplayFlexJustifyRight>

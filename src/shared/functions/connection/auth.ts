@@ -8,6 +8,8 @@ import { connectionAPIGet } from './connectionAPI';
 import { UserTokenType } from '../../../modules/login/types/UserTokenType';
 import { UserTypeEnum } from '../../enums/userType.enum'; 
 import { UsuarioDisplayRoutesEnum } from '../../../modules/usuarioDisplay/routes';
+import { persistor } from '../../../store';
+import { jwtDecode } from 'jwt-decode';
 
 export const unsetAuthorizationToken = () => removeItemStorage(AUTHORIZATION_KEY);
 
@@ -21,14 +23,19 @@ export const getAuthorizationToken = () => getItemStorage(AUTHORIZATION_KEY);
 
 export const getUserInfoByToken = (): UserTokenType | undefined => {
   const token = getAuthorizationToken();
-  const tokenSplited = token?.split('.');
 
-  if (tokenSplited && tokenSplited.length > 1) {
-    return JSON.parse(window.atob(tokenSplited[1]));
+  if (token) {
+    try {
+      return jwtDecode<UserTokenType>(token);
+    } catch (e) {
+      console.error("Erro ao decodificar o token:", e);
+      return undefined;
+    }
   }
 
   return undefined;
 };
+
 
 export const verifyLoggedIn = async () => {
   const token = getAuthorizationToken();
@@ -45,9 +52,14 @@ export const verifyLoggedIn = async () => {
   return null;
 };
 
-export const logout = (navigate: NavigateFunction) => {
+export const logout = async (navigate: NavigateFunction) => {
+  await persistor.purge();
+
   unsetAuthorizationToken();
+  
   navigate(LoginRoutesEnum.LOGIN);
+
+  window.location.reload();
 };
 
 export const createAuthLoader = (allowedRoles?: UserTypeEnum[]) => {

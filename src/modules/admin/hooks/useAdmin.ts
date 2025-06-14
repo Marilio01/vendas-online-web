@@ -21,7 +21,7 @@ export const useAdmin = () => {
     if (!value) {
       setUsersFiltered([...users]);
     } else {
-      setUsersFiltered([...users.filter((user) => user.name.includes(value))]);
+      setUsersFiltered([...users.filter((user: { name: string | string[]; }) => user.name.includes(value))]);
     }
   };
 
