@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { logout } from '../../functions/connection/auth';
-import { HeaderContainer, LogoExit, DisplayIcon } from './header.style'; 
+import { HeaderContainer, LogoExit } from './header.style'; 
 
 const Header = () => {
   const navigate = useNavigate();
@@ -15,10 +15,6 @@ const Header = () => {
 
   const hideModal = () => {
     setOpen(false);
-  };
-
-  const handleGoToDisplay = () => {
-    navigate('/display'); 
   };
 
   return (
@@ -34,9 +30,7 @@ const Header = () => {
         <p>Tem certeza que deseja sair?</p>
       </Modal>
 
-      <HeaderContainer>
-        <DisplayIcon onClick={handleGoToDisplay} />
-        
+      <HeaderContainer>        
         <LogoExit onClick={showModal} />
       </HeaderContainer>
     </>

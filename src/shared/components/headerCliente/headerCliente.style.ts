@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import SVGLogo from '../icons/SVGLogo';
-import { Input } from 'antd';
-import { SettingOutlined } from '@ant-design/icons'; // Importa o SettingOutlined
+import { Button, Input } from 'antd';
+import { SettingOutlined, ShoppingCartOutlined } from '@ant-design/icons'; 
 
-export const SearchInput = styled(Input)`
+export const SearchInput = styled(Input.Search)`
   width: 100%;
   max-width: 450px;
 
@@ -20,11 +20,11 @@ export const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
+  background-color: #001529;
   padding: 12px 32px;
-  box-shadow: 0 4px 12px rgba(24, 90, 157, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #f0f0f0;
+  color: rgba(255, 255, 255, 0.85);
 
   @media (max-width: 768px) {
     padding: 10px 16px;
@@ -33,6 +33,33 @@ export const HeaderContainer = styled.header`
   @media (max-width: 480px) {
     padding: 8px 12px;
   }
+`;
+
+export const AdminButton = styled(Button)`
+  background: linear-gradient(45deg, #1890ff, #0050b3);
+  border: none;
+  color: white;
+
+  &:hover {
+    background: linear-gradient(45deg, #40a9ff, #1890ff);
+    box-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
+  }
+`;
+
+export const EmptyCartContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+`;
+
+export const EmptyCartIcon = styled(ShoppingCartOutlined)`
+  font-size: 48px;
+  color: #ccc;
+  margin-bottom: 16px;
 `;
 
 export const LeftSection = styled.div`
@@ -167,7 +194,7 @@ export const UserInfo = styled.div`
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: darkblue;
+    background-color: rgba(255, 255, 255, 0.1);
   }
 
   .text-hover {
