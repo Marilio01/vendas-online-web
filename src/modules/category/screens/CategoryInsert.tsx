@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-
 import Button from '../../../shared/components/buttons/button/Button';
 import Input from '../../../shared/components/inputs/input/Input';
 import Screen from '../../../shared/components/screen/Screen';
@@ -13,8 +12,17 @@ import { CategoryRoutesEnum } from '../routes';
 import Loading from '../../../shared/components/loading/Loading';
 
 const CategoryInsert = () => {
-  const { name, categoryId, loading, handleOnChangeName, disabledButton, insertCategory } =
-    useInsertCategory();
+  const { 
+    name, 
+    categoryId, 
+    loading, 
+    error,
+    handleOnChangeName,
+    handleOnBlur,
+    disabledButton, 
+    insertCategory 
+  } = useInsertCategory();
+  
   const navigate = useNavigate();
 
   const handleOnClickCancel = () => {
@@ -24,16 +32,9 @@ const CategoryInsert = () => {
   return (
     <Screen
       listBreadcrumb={[
-        {
-          name: 'HOME',
-        },
-        {
-          name: 'CATEGORIAS',
-          navigateTo: CategoryRoutesEnum.CATEGORY,
-        },
-        {
-          name: categoryId ? 'EDITAR CATEGORIA' : 'INSERIR CATEGORIA',
-        },
+        { name: 'HOME' },
+        { name: 'CATEGORIAS', navigateTo: CategoryRoutesEnum.CATEGORY },
+        { name: categoryId ? 'EDITAR CATEGORIA' : 'INSERIR CATEGORIA' },
       ]}
     >
       <DisplayFlexJustifyCenter>
@@ -44,11 +45,13 @@ const CategoryInsert = () => {
         ) : (
           <LimitedContainer width={400}>
             <Input
-              onChange={handleOnChangeName}
-              value={name}
-              margin="0px 0px 16px 0px"
               title="Nome"
-              placeholder="Nome"
+              placeholder="Nome da Categoria"
+              value={name}
+              onChange={handleOnChangeName}
+              onBlur={handleOnBlur}
+              margin="0px 0px 16px 0px"
+              errorMessage={error}
             />
             <DisplayFlexJustifyRight>
               <LimitedContainer margin="0px 8px" width={120}>

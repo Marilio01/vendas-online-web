@@ -27,11 +27,11 @@ export const useCategory = () => {
     if (!value) {
       setCategoriesFiltered([...categories]);
     } else {
-      setCategoriesFiltered([
-        ...categoriesFiltered.filter((category) =>
+      setCategoriesFiltered(
+        categories.filter((category) =>
           category.name.toUpperCase().includes(value.toUpperCase()),
         ),
-      ]);
+      );
     }
   };
 
