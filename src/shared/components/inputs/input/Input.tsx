@@ -1,17 +1,21 @@
-import { Input as InputAntd, InputProps as InputPropsAntd } from 'antd';
+import { Input as InputAntd, InputProps } from 'antd';
+import { BoxInput, ErrorMessage, TitleInput } from './input.styles';
 
-import { BoxInput, TitleInput } from './input.styles';
-
-export interface InputProps extends InputPropsAntd {
+export interface Props extends InputProps {
   title?: string;
+  errorMessage?: string;
   margin?: string;
 }
 
-const Input = ({ title, margin, ...props }: InputProps) => {
+const Input = ({ title, errorMessage, margin, ...props }: Props) => {
   return (
     <BoxInput style={{ margin }}>
       {title && <TitleInput>{title}</TitleInput>}
-      <InputAntd {...props} />
+      <InputAntd
+        status={errorMessage ? 'error' : ''}
+        {...props}
+      />
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
     </BoxInput>
   );
 };

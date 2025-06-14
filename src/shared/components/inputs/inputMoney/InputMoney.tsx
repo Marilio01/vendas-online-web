@@ -1,45 +1,44 @@
 import { useEffect, useState } from 'react';
+import Input, { Props as InputProps } from '../input/Input'; 
 
-import Input, { InputProps } from '../input/Input';
-
-interface InputMoneyProps extends InputProps {
+interface InputMoneyProps extends Omit<InputProps, 'value' | 'onChange'> {
   value: number;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  addonBefore?: string;
 }
 
 const DECIMAL_SIZE = 2;
 
-const InputMoney = ({ value, onChange, addonBefore = 'R$', ...props }: InputMoneyProps) => {
-  const [currentValue, setCurrentValue] = useState<string>(`${value}`);
+const InputMoney = ({ value, onChange, ...props }: InputMoneyProps) => {
+  const [currentValue, setCurrentValue] = useState<string>('0,00');
 
   useEffect(() => {
     const valueString = `${value}`;
-
-    if (!/\D/.test(valueString.replace('.', ''))) {
-      setCurrentValue(value.toFixed(DECIMAL_SIZE).toString().replace('.', ','));
+    if (!isNaN(parseFloat(valueString))) {
+      setCurrentValue(Number(value).toFixed(DECIMAL_SIZE).replace('.', ','));
     }
   }, [value]);
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const valueRemoved = event.target.value.replace(',', '');
-
-    const sizeSlice = valueRemoved.length - DECIMAL_SIZE;
-    const newValue = [valueRemoved.slice(0, sizeSlice), '.', valueRemoved.slice(sizeSlice)].join(
-      '',
-    );
-
+    const valueRemoved = event.target.value.replace(/\D/g, '');
+    if (valueRemoved === '') {
+      onChange({ ...event, target: { ...event.target, value: '0.00' } });
+      return;
+    }
+    const newValueNumber = Number(valueRemoved) / 100;
+    const newValueString = newValueNumber.toFixed(DECIMAL_SIZE);
     onChange({
       ...event,
-      target: {
-        ...event.target,
-        value: newValue,
-      },
+      target: { ...event.target, value: newValueString },
     });
   };
 
   return (
-    <Input addonBefore={addonBefore} value={currentValue} onChange={handleOnChange} {...props} />
+    <Input 
+      addonBefore="R$" 
+      value={currentValue} 
+      onChange={handleOnChange} 
+      {...props}
+    />
   );
 };
 
