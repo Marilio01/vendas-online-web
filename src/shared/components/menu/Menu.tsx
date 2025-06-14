@@ -17,6 +17,8 @@ import { OrderRoutesEnum } from '../../../modules/orders/routes';
 import { UserRoutesEnum } from '../../../modules/user/routes';
 import { getUserInfoByToken } from '../../functions/connection/auth';
 import { UserTypeEnum } from '../../../shared/enums/userType.enum';
+import { AdminRoutesEnum } from '../../../modules/admin/routes';
+import { UsuarioDisplayRoutesEnum } from '../../../modules/usuarioDisplay/routes';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -30,6 +32,7 @@ const Menu = () => {
       key: 'home',
       label: 'Principal',
       icon: <HomeOutlined />,
+      onClick: () => navigate(UsuarioDisplayRoutesEnum.USUARIO_DISPLAY),
     },
     {
       key: 'products',
@@ -83,7 +86,7 @@ const Menu = () => {
             key: 'admin',
             label: 'Admins',
             icon: <CrownOutlined />,
-            onClick: () => navigate(UserRoutesEnum.ADMIN),
+            onClick: () => navigate(AdminRoutesEnum.ADMIN),
           },
         ]
       : []),
