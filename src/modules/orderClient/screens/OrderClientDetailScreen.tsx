@@ -1,4 +1,4 @@
-import { Descriptions, Divider, Typography } from 'antd';
+import { Descriptions, Divider, Typography, Card } from 'antd';
 import { useParams } from 'react-router-dom';
 import { useOrderClientDetail } from '../hooks/useOrderClientDetail';
 import { PageContainer } from '../../../shared/components/pageContainer/PageContainer';
@@ -8,6 +8,8 @@ import { insertMaskInCpf } from '../../../shared/functions/cpf';
 import { convertNumberToMoney } from '../../../shared/functions/money';
 import { insertMaskInCEP } from '../../../shared/functions/address';
 import ListOrderProduct from '../../orders/componets/ListOrderProduct';
+import Breadcrumb from '../../../shared/components/breadcrumb/Breadcrumb';
+import HeaderCliente from '../../../shared/components/headerCliente/HeaderCliente';
 
 const { Title } = Typography;
 
@@ -38,7 +40,17 @@ const OrderClientDetailScreen = () => {
   const isCardPayment = order.payment?.type === 'PaymentCreditCardEntity';
 
   return (
+    <>
+    <HeaderCliente />
     <PageContainer>
+      <Card>
+        <Breadcrumb
+        listBreadcrumb={[
+          { name: 'Home', navigateTo: '/display' },
+          { name: 'Minhas Compras', navigateTo: '/compras' },
+          { name: 'Detalhes do Pedido'},
+        ]}
+      />
       <Title level={3} style={{ marginBottom: '24px' }}>
         Detalhes do Pedido #{orderId}
       </Title>
@@ -104,7 +116,9 @@ const OrderClientDetailScreen = () => {
         </Title>
         <ListOrderProduct ordersProduct={order.ordersProduct} />
       </>
+      </Card>
     </PageContainer>
+    </>
   );
 };
 

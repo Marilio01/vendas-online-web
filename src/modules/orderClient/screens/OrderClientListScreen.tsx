@@ -9,6 +9,8 @@ import { useOrderClient } from '../hooks/useOrderClient';
 import { convertNumberToMoney } from '../../../shared/functions/money';
 import { OrderClientRoutesEnum } from '../routes';
 import { PageContainer } from '../../../shared/components/pageContainer/PageContainer';
+import Breadcrumb from '../../../shared/components/breadcrumb/Breadcrumb';
+import HeaderCliente from '../../../shared/components/headerCliente/HeaderCliente';
 
 const { Title } = Typography;
 
@@ -48,8 +50,16 @@ const OrderClientListScreen = () => {
   }, [orders]);
 
   return (
+    <>
+    <HeaderCliente />
     <PageContainer>
       <Card>
+      <Breadcrumb
+        listBreadcrumb={[
+          { name: 'Home', navigateTo: '/display' },
+          { name: 'Minhas Compras' },
+        ]}
+      />
         <Title level={4} style={{ marginBottom: '24px' }}>
           Minhas Compras
         </Title>
@@ -64,6 +74,7 @@ const OrderClientListScreen = () => {
         />
       </Card>
     </PageContainer>
+    </>
   );
 };
 
