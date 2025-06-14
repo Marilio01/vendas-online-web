@@ -1,65 +1,63 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { URL_PRODUCT, URL_PRODUCT_ID } from '../../../shared/constants/urls';
-import { MethodsEnum } from '../../../shared/enums/methods.enum';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useRequests } from '../../../shared/hooks/useRequests';
-import { ProductType } from '../../../shared/types/ProductType';
 import { useProductReducer } from '../../../store/reducers/productReducer/useProductReducer';
-import { ProductRoutesEnum } from '../routes';
+import { ProductType } from '../../../shared/types/ProductType';
+import { CategoryType } from '../../../shared/types/CategoryType';
+import { URL_PRODUCT, URL_CATEGORY } from '../../../shared/constants/urls';
+import { MethodsEnum } from '../../../shared/enums/methods.enum';
+
+export interface GroupedProduct {
+  category: CategoryType;
+  products: ProductType[];
+}
 
 export const useClientProduct = () => {
-  const [productIdDelete, setProductIdDelete] = useState<number | undefined>();
-  const { products, setProducts } = useProductReducer();
-  const [productsFiltered, setProdutsFiltered] = useState<ProductType[]>([]);
   const { request } = useRequests();
-  const navigate = useNavigate();
+  const { searchTerm } = useProductReducer();
+
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+
+  const fetchData = useCallback(async () => {
+    const [productsResult, categoriesResult] = await Promise.all([
+      request<ProductType[]>(URL_PRODUCT, MethodsEnum.GET),
+      request<CategoryType[]>(URL_CATEGORY, MethodsEnum.GET),
+    ]);
+    setProducts(productsResult || []);
+    setCategories(categoriesResult || []);
+  }, [request]);
 
   useEffect(() => {
-    setProdutsFiltered([...products]);
-  }, [products]);
+    fetchData();
+  }, [fetchData]);
 
-  useEffect(() => {
-    request<ProductType[]>(URL_PRODUCT, MethodsEnum.GET, setProducts);
-  }, []);
-
-  const handleOnClickInsert = () => {
-    navigate(ProductRoutesEnum.PRODUCT_INSERT);
-  };
-
-  const onSearch = (value: string) => {
-    if (!value) {
-      setProdutsFiltered([...products]);
-    } else {
-      setProdutsFiltered([...productsFiltered.filter((product) => product.name.includes(value))]);
+  const groupedProducts = useMemo<GroupedProduct[]>(() => {
+    if (!categories.length || !products.length) {
+      return [];
     }
-  };
+    return categories.map(category => ({
+      category,
+      products: products.filter(product => product.category?.id === category.id),
+    })).filter(group => group.products.length > 0);
+  }, [categories, products]);
 
-  const handleDeleteProduct = async () => {
-    await request(URL_PRODUCT_ID.replace('{productId}', `${productIdDelete}`), MethodsEnum.DELETE);
-    await request<ProductType[]>(URL_PRODUCT, MethodsEnum.GET, setProducts);
-    setProductIdDelete(undefined);
-  };
+  const filteredGroupedProducts = useMemo<GroupedProduct[]>(() => {
+    if (!searchTerm) {
+      return groupedProducts;
+    }
+    
+    const term = searchTerm.toUpperCase();
+    
+    return groupedProducts.map(group => ({
+      ...group,
+      products: group.products.filter(product => 
+        product.name.toUpperCase().includes(term)
+      )
+    })).filter(group => group.products.length > 0);
 
-  const handleEditProduct = async (productId: number) => {
-    navigate(ProductRoutesEnum.PRODUCT_EDIT.replace(':productId', `${productId}`));
-  };
-
-  const handleCloseModalDelete = () => {
-    setProductIdDelete(undefined);
-  };
-
-  const handleOpenModalDelete = (productId: number) => {
-    setProductIdDelete(productId);
-  };
+  }, [searchTerm, groupedProducts]);
 
   return {
-    productsFiltered,
-    openModalDelete: !!productIdDelete,
-    handleOnClickInsert,
-    onSearch,
-    handleDeleteProduct,
-    handleEditProduct,
-    handleCloseModalDelete,
-    handleOpenModalDelete,
+    groupedProducts: filteredGroupedProducts,
   };
 };

@@ -84,3 +84,13 @@ export const AddCartButton = styled(Button)`
     font-size: 18px;
   }
 `;
+
+export const CategoryTitle = styled.h2`
+  font-size: 28px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 24px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #1890ff;
+  display: inline-block;
+`;
