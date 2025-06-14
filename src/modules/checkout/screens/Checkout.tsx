@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Card, Col, List, Row, Typography } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import { useAddress } from '../../address/hooks/useAddress';
-import AddressFormModal from '../../address/screens/AddressFormModal';
 import AddressList from '../../address/screens/AddressList';
 import { CheckoutContainer, CheckoutTitle } from '../styles/Checkout.styles';
 import { useCartReducer } from '../../../store/reducers/cartReducer/useCartReducer';
 import { convertNumberToMoney } from '../../../shared/functions/money';
+import AddressFormModal from '../../address/screens/AddressFormModal';
+import HeaderCliente from '../../../shared/components/headerCliente/HeaderCliente';
 
 
 const Checkout = () => {
@@ -48,6 +49,7 @@ const Checkout = () => {
 
   return (
     <>
+      <HeaderCliente />
       <AddressFormModal 
         open={isAddressModalOpen}
         onClose={() => setIsAddressModalOpen(false)}
@@ -62,7 +64,6 @@ const Checkout = () => {
               addresses={addresses}
               selectedAddressId={selectedAddressId}
               onSelectAddress={setSelectedAddressId}
-              onAddNewAddress={() => setIsAddressModalOpen(true)}
             />
 
             <Card style={{ marginTop: '24px' }}>
