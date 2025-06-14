@@ -1,5 +1,5 @@
 import { RouteObject } from 'react-router-dom';
-import { ChangePasswordScreen } from './screens/ChangePasswordScreen';
+import ChangePasswordScreen from './screens/ChangePasswordScreen';
 
 export enum ChangePasswordRoutesEnum {
   CHANGE = '/changePassword',

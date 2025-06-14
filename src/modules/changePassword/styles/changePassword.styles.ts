@@ -21,3 +21,10 @@ export const Form = styled.div`
   flex-direction: column;
   gap: 16px;
 `;
+
+export const ButtonsContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px; 
+`;
