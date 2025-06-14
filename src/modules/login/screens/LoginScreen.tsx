@@ -20,7 +20,6 @@ const LoginScreen = () => {
   const { authRequest, loading } = useRequests();
 
   useEffect(() => {
-    document.title = 'Login';
   }, []);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {

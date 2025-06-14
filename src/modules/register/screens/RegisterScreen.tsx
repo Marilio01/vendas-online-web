@@ -22,7 +22,6 @@ const RegisterScreen = () => {
   } = useRegister();
 
   useEffect(() => {
-    document.title = 'Cadastro';
   }, []);
 
   return (
