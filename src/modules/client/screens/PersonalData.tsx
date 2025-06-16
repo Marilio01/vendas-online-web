@@ -12,11 +12,13 @@ import EditUserDataButton from '../../../shared/components/editUserDataButton/Ed
 import { PageContainer } from '../../../shared/components/pageContainer/PageContainer';
 import HeaderCliente from '../../../shared/components/headerCliente/HeaderCliente';
 import Breadcrumb from '../../../shared/components/breadcrumb/Breadcrumb';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 const { Title } = Typography;
 
 const PersonalData = () => {
-  const { request, loading } = useRequests();
+  const { request } = useRequests();
+  const { loading } = useGlobalReducer();
   const [user, setUser] = useState<UserType>();
 
   const fetchUser = async () => {
