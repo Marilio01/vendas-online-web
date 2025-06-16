@@ -12,12 +12,14 @@ import {
   TitleLogin,
   RegisterLinkText,
 } from '../styles/loginScreen.styles';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 const LoginScreen = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { authRequest, loading } = useRequests();
+  const { authRequest } = useRequests();
+  const { loading } = useGlobalReducer();
 
   useEffect(() => {
   }, []);
