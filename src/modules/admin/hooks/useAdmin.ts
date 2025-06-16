@@ -3,11 +3,13 @@ import { URL_USER_ALL_ADMIN } from '../../../shared/constants/urls';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { useUserReducer } from '../../../store/reducers/userReducer/useUserReducer';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 export const useAdmin = () => {
   const { users, setUsers } = useUserReducer();
   const [usersFiltered, setUsersFiltered] = useState(users);
-  const { request, loading } = useRequests();
+  const { request } = useRequests();
+  const { loading } = useGlobalReducer();
 
   useEffect(() => {
     request(URL_USER_ALL_ADMIN, MethodsEnum.GET, setUsers);

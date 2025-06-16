@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { URL_USER } from '../../../shared/constants/urls';
+import { URL_USER_ADMIN } from '../../../shared/constants/urls';
 import { InsertUser } from '../../../shared/dtos/InsertUser.dto';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { UserTypeEnum } from '../../../shared/enums/userType.enum';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { AdminRoutesEnum } from '../routes';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 interface AdminInsertErrors {
   name?: string;
@@ -25,7 +26,8 @@ interface TouchedFields {
 
 export const useAdminInsert = () => {
   const navigate = useNavigate();
-  const { request, loading } = useRequests();
+  const { request } = useRequests();
+  const { loading } = useGlobalReducer();
 
   const [user, setUser] = useState<InsertUser>({
     cpf: '',
@@ -112,7 +114,7 @@ export const useAdminInsert = () => {
       typeUser: UserTypeEnum.Admin,
     };
     
-    const result = await request(URL_USER, MethodsEnum.POST, undefined, body, 'Administrador inserido com sucesso!');
+    const result = await request(URL_USER_ADMIN, MethodsEnum.POST, undefined, body, 'Administrador inserido com sucesso!');
     
     if (result) {
       navigate(AdminRoutesEnum.ADMIN);
