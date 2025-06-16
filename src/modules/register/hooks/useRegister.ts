@@ -4,6 +4,7 @@ import { URL_USER } from '../../../shared/constants/urls';
 import { InsertUser } from '../../../shared/dtos/InsertUser.dto';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { useRequests } from '../../../shared/hooks/useRequests';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 interface RegisterErrors {
   name?: string;
@@ -23,7 +24,8 @@ interface TouchedFields {
 
 export const useRegister = () => {
   const navigate = useNavigate();
-  const { request, loading } = useRequests();
+  const { request } = useRequests();
+  const { loading } = useGlobalReducer();
 
   const [user, setUser] = useState<InsertUser>({
     cpf: '',
@@ -98,7 +100,7 @@ export const useRegister = () => {
     setUser((currentUser) => ({ ...currentUser, [name]: value }));
   };
 
-  const handleOnBlur = (event: React.FocusEvent<HTMLInputElement>, name: keyof InsertUser) => {
+  const handleOnBlur = (_: React.FocusEvent<HTMLInputElement>, name: keyof InsertUser) => {
     setTouchedFields(prev => ({ ...prev, [name]: true }));
   };
 
