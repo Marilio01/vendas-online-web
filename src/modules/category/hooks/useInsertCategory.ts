@@ -5,11 +5,13 @@ import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { useCategoryReducer } from '../../../store/reducers/categoryReducer/useCategoryReducer';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { CategoryRoutesEnum } from '../routes';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 export const useInsertCategory = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
-  const { request, loading } = useRequests();
+  const { request } = useRequests();
+  const { loading } = useGlobalReducer();
   const { setCategories, category, setCategory } = useCategoryReducer();
 
   const [name, setName] = useState('');
