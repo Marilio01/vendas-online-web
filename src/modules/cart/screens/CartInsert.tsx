@@ -1,5 +1,5 @@
-import { useInsertCart } from "../hooks/useInsertCart";
-import { CartInsertContainer, StyledButton } from "../styles/CartInsert.styles";
+import { useCart } from "../hooks/useCart";
+import { StyledButton } from "../styles/CartInsert.styles";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 
 type CartInsertProps = {
@@ -7,18 +7,18 @@ type CartInsertProps = {
 };
 
 const CartInsert = ({ productId }: CartInsertProps) => {
-  const { handleInsertCart } = useInsertCart(productId);
+  const { insertProductInCart, loading } = useCart();
 
   return (
-    <CartInsertContainer>
-      <StyledButton
-        type="primary"
-        icon={<ShoppingCartOutlined />}
-        onClick={handleInsertCart}
-      >
-        Adicionar ao carrinho
-      </StyledButton>
-    </CartInsertContainer>
+    <StyledButton
+      type="primary"
+      htmlType="button" 
+      icon={<ShoppingCartOutlined />}
+      onClick={() => insertProductInCart(productId)}
+      loading={loading}
+    >
+      Adicionar ao carrinho
+    </StyledButton>
   );
 };
 

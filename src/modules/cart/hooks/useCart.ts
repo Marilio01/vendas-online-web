@@ -1,35 +1,73 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useRequests } from '../../../shared/hooks/useRequests';
-import { MethodsEnum } from '../../../shared/enums/methods.enum';
-import { URL_CART } from '../../../shared/constants/urls';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 import { useCartReducer } from '../../../store/reducers/cartReducer/useCartReducer';
+import { URL_CART } from '../../../shared/constants/urls';
+import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { CartType } from '../../../shared/types/CartType';
-
-let fetchCartInstance: () => Promise<void>;
 
 export const useCart = () => {
   const { request } = useRequests();
-  const { setCarts } = useCartReducer();
+  const { loading, user } = useGlobalReducer();
+  const { cart, refreshCart, updateItemAmount } = useCartReducer();
 
-  const fetchCart = async () => {
-    await request<{ cartProduct: CartType[] }>(URL_CART, MethodsEnum.GET, setCarts);
-  };
-
-  if (!fetchCartInstance) {
-    fetchCartInstance = fetchCart;
-  }
-
+  const hasFetchedCart = useRef(false);
   useEffect(() => {
-    fetchCart();
-  }, []); 
-};
+    if (user?.id && !hasFetchedCart.current) {
+      refreshCart();
+      hasFetchedCart.current = true;
+    }
+  }, [user?.id, refreshCart]);
 
-export const refreshCart = () => {
-  console.log('2. Função refreshCart FOI CHAMADA.');
-  if (fetchCartInstance) {
-    console.log('3. SUCESSO: fetchCartInstance EXISTE. Executando a busca...');
-    return fetchCartInstance();
-  } else {
-    console.error('4. ERRO CRÍTICO: fetchCartInstance é UNDEFINED!');
+useEffect(() => {
+  if (user?.id && !hasFetchedCart.current) {
+    refreshCart();
+    hasFetchedCart.current = true;
   }
+}, [user?.id, refreshCart]);
+
+  const removeProductFromCart = useCallback(async (productId: number) => {
+    await request(
+      `${URL_CART}/product/${productId}`,
+      MethodsEnum.DELETE,
+      undefined,
+      undefined,
+      'Produto removido!',
+    );
+    await refreshCart();
+  }, [request, refreshCart]);
+
+  const updateProductAmount = useCallback(async (cartItem: CartType, newAmount: number) => {
+    if (newAmount <= 0) {
+      await removeProductFromCart(cartItem.product.id);
+      return;
+    }
+    updateItemAmount(cartItem.id, newAmount);
+    await request(
+      URL_CART,
+      MethodsEnum.PATCH,
+      undefined,
+      { productId: cartItem.product.id, amount: newAmount },
+    );
+    await refreshCart();
+  }, [request, refreshCart, removeProductFromCart, updateItemAmount]);
+
+  const insertProductInCart = useCallback(async (productId: number) => {
+    await request(
+      URL_CART,
+      MethodsEnum.POST,
+      undefined,
+      { amount: 1, productId },
+      'Produto adicionado!',
+    );
+    await refreshCart();
+  }, [request, refreshCart]);
+
+  return {
+    cart,
+    loading,
+    insertProductInCart,
+    updateProductAmount,
+    removeProductFromCart,
+  };
 };
