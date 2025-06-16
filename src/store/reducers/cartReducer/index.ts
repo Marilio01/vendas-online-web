@@ -17,16 +17,17 @@ export const cartSlice = createSlice({
       state.cart = action.payload;
     },
     updateItemAmountAction: (state, action: PayloadAction<{ id: number; amount: number }>) => {
-      const { id, amount } = action.payload;
-      const itemIndex = state.cart.findIndex((item) => item.id === id);
-      
+      const itemIndex = state.cart.findIndex((item) => item.id === action.payload.id);
       if (itemIndex !== -1) {
-        state.cart[itemIndex].amount = amount;
+        state.cart[itemIndex].amount = action.payload.amount;
       }
+    },
+    removeItemAction: (state, action: PayloadAction<number>) => {
+      state.cart = state.cart.filter(item => item.id !== action.payload);
     },
   },
 });
 
-export const { setCartAction, updateItemAmountAction } = cartSlice.actions;
+export const { setCartAction, updateItemAmountAction, removeItemAction } = cartSlice.actions;
 
 export default cartSlice.reducer;

@@ -1,15 +1,16 @@
+import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { UserType } from '../../../modules/login/types/UserType';
 import { NotificationEnum } from '../../../shared/types/NotificationType';
 import { useAppSelector } from '../../hooks';
-import { setNotificationAction, setUserAction } from '.';
+import { setNotificationAction, setUserAction, setLoadingAction } from '.';
 
 export const useGlobalReducer = () => {
   const dispatch = useDispatch();
-  const { user, notification } = useAppSelector((state) => state.globalReducer);
+  const { user, notification, loading } = useAppSelector((state) => state.globalReducer);
 
-  const setNotification = (message: string, type: NotificationEnum, description?: string) => {
+  const setNotification = useCallback((message: string, type: NotificationEnum, description?: string) => {
     dispatch(
       setNotificationAction({
         message,
@@ -17,15 +18,22 @@ export const useGlobalReducer = () => {
         description,
       }),
     );
-  };
-  const setUser = (user: UserType) => {
+  }, [dispatch]);
+  
+  const setUser = useCallback((user?: UserType) => {
     dispatch(setUserAction(user));
-  };
+  }, [dispatch]);
+
+  const setLoading = useCallback((isLoading: boolean) => {
+    dispatch(setLoadingAction(isLoading));
+  }, [dispatch]);
 
   return {
     user,
     notification,
+    loading,
     setNotification,
     setUser,
+    setLoading,
   };
 };
