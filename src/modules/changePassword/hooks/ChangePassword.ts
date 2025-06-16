@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { URL_USER } from '../../../shared/constants/urls';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { useRequests } from '../../../shared/hooks/useRequests';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 interface PasswordForm {
   lastPassword: string;
@@ -25,7 +26,8 @@ export const useChangePassword = () => {
     confirmPassword: '',
   });
 
-  const { request, loading } = useRequests();
+  const { request } = useRequests();
+  const { loading } = useGlobalReducer();
   const navigate = useNavigate();
   
   const [errors, setErrors] = useState<PasswordErrors>({});
@@ -80,7 +82,7 @@ export const useChangePassword = () => {
       newPassword: form.newPassword,
     };
     
-    const result = await request(URL_USER, MethodsEnum.PATCH, undefined, body, 'Senha alterada com sucesso!');
+    const result = await request(`${URL_USER}/password`, MethodsEnum.PATCH, undefined, body, 'Senha alterada com sucesso!');
     
     if (result) {
       navigate('/display');
