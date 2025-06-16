@@ -6,6 +6,7 @@ import { ProductRoutesEnum } from '../routes';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { useProductReducer } from '../../../store/reducers/productReducer/useProductReducer';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 const DEFAULT_PRODUCT: InsertProduct = {
   name: '',
@@ -26,7 +27,8 @@ type TouchedFields = Partial<Record<keyof InsertProduct, boolean>>;
 
 export const useInsertProduct = (productId?: string) => {
   const navigate = useNavigate();
-  const { request, loading } = useRequests();
+  const { request } = useRequests();
+  const { loading } = useGlobalReducer();
   const { product: productReducer, setProduct: setProductReducer } = useProductReducer();
   
   const [product, setProduct] = useState<InsertProduct>(DEFAULT_PRODUCT);

@@ -1,34 +1,41 @@
-import { Typography, Divider } from 'antd';
+import { Typography } from 'antd';
 import { useClientProduct } from '../hooks/useClientProduct';
-import { Container, StyledRow, CategoryTitle } from '../styles/clienteProduct.style';
+import { 
+  Container, 
+  ProductGrid,
+  CategoryTitle, 
+  CategorySection,
+} from '../styles/clienteProduct.style';
 import ProductCard from './ProductCard';
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
-const ClientProduct = () => {
+const ClientProductScreen = () => {
   const { groupedProducts } = useClientProduct();
 
   return (
     <Container>
-      <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>
-        Nossos Produtos
-      </Title>
+      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <Title level={1} style={{ marginBottom: 8, fontWeight: 700 }}>
+          Nossos Produtos
+        </Title>
+        <Paragraph type="secondary" style={{ fontSize: '18px', maxWidth: '600px', margin: '0 auto' }}>
+          Explore nossa seleção de produtos de alta qualidade, cuidadosamente separados por categoria para você.
+        </Paragraph>
+      </div>
       
-      {groupedProducts.map((group, index) => (
-        <div key={group.category.id}>
-          
-          {index > 0 && <Divider />}
-
+      {groupedProducts.map((group) => (
+        <CategorySection key={group.category.id}>
           <CategoryTitle>{group.category.name}</CategoryTitle>
-          <StyledRow>
+          <ProductGrid>
             {group.products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-          </StyledRow>
-        </div>
+          </ProductGrid>
+        </CategorySection>
       ))}
     </Container>
   );
 };
 
-export default ClientProduct;
+export default ClientProductScreen;
