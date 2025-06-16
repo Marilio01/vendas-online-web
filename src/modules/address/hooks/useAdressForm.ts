@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback  } from 'react';
 import { AddressType } from '../../../shared/types/AddressType';
 
 interface AddressFormState {
@@ -29,19 +29,25 @@ export const useAddressForm = (addressToEdit?: AddressType) => {
   const [address, setAddress] = useState<AddressFormState>(INITIAL_STATE);
   const [errors, setErrors] = useState<AddressFormErrors>({});
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
-  const [disabledButton, setDisabledButton] = useState(true);
 
-  useEffect(() => {
-    if (addressToEdit) {
-      setAddress({
-        cep: addressToEdit.cep.replace(/\D/g, ''),
-        numberAddress: String(addressToEdit.numberAddress),
-        complement: addressToEdit.complement,
-        stateId: addressToEdit.city?.state?.id,
-        cityId: addressToEdit.city?.id,
-      });
-    }
-  }, [addressToEdit]);
+useEffect(() => {
+  if (addressToEdit) {
+    const newAddress = {
+      cep: addressToEdit.cep.replace(/\D/g, ''),
+      numberAddress: String(addressToEdit.numberAddress),
+      complement: addressToEdit.complement,
+      stateId: addressToEdit.city?.state?.id,
+      cityId: addressToEdit.city?.id,
+    };
+
+    setAddress(prev => {
+      if (JSON.stringify(prev) === JSON.stringify(newAddress)) {
+        return prev;
+      }
+      return newAddress;
+    });
+  }
+}, [addressToEdit]);
 
   useEffect(() => {
     const newErrors: AddressFormErrors = {};
@@ -57,29 +63,41 @@ export const useAddressForm = (addressToEdit?: AddressType) => {
       newErrors.cityId = 'Cidade é obrigatória.';
     }
     if (touchedFields.complement) {
-      if (!trimmedComplement) newErrors.complement = 'Complemento é obrigatório.';
-      else if (address.complement !== trimmedComplement) newErrors.complement = 'Não pode conter espaços extras.';
-      else if (trimmedComplement.length < 3) newErrors.complement = 'Deve ter no mínimo 3 caracteres.';
+      if (!trimmedComplement) {
+        newErrors.complement = 'Complemento é obrigatório.';
+      } else if (address.complement !== trimmedComplement) {
+        newErrors.complement = 'Não pode conter espaços extras.';
+      } else if (trimmedComplement.length < 3) {
+        newErrors.complement = 'Deve ter no mínimo 3 caracteres.';
+      }
     }
     if (touchedFields.numberAddress) {
-      if (!address.numberAddress) newErrors.numberAddress = 'Número é obrigatório.';
-      else if (Number(address.numberAddress) <= 0) newErrors.numberAddress = 'Número inválido.';
+      if (!address.numberAddress) {
+        newErrors.numberAddress = 'Número é obrigatório.';
+      } else if (Number(address.numberAddress) <= 0) {
+        newErrors.numberAddress = 'Número inválido.';
+      }
     }
 
     setErrors(newErrors);
+  }, [address, touchedFields]);
 
-    const isFormValid =
+  const disabledButton = useMemo(() => {
+    const trimmedComplement = address.complement.trim();
+    return !(
       address.cep.length === 8 &&
       address.stateId &&
       address.cityId &&
       trimmedComplement.length >= 3 &&
       address.complement === trimmedComplement &&
-      Number(address.numberAddress) > 0;
-      
-    setDisabledButton(!isFormValid);
-  }, [address, touchedFields]);
+      Number(address.numberAddress) > 0
+    );
+  }, [address]);
 
-  const handleOnChangeInput = (event: React.ChangeEvent<HTMLInputElement>, name: keyof AddressFormState) => {
+  const handleOnChangeInput = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    name: keyof AddressFormState
+  ) => {
     let value = event.target.value;
     if (name === 'cep' || name === 'numberAddress') {
       value = value.replace(/\D/g, '');
@@ -94,12 +112,20 @@ export const useAddressForm = (addressToEdit?: AddressType) => {
   const handleOnBlur = (name: keyof AddressFormState) => {
     setTouchedFields(prev => ({ ...prev, [name]: true }));
   };
-  
-  const resetForm = () => {
+
+  const resetForm = useCallback(() => {
     setAddress(INITIAL_STATE);
     setTouchedFields({});
     setErrors({});
-  };
+  }, []); 
 
-  return { address, errors, disabledButton, handleOnChangeInput, handleChangeSelect, handleOnBlur, resetForm };
+  return {
+    address,
+    errors,
+    disabledButton,
+    handleOnChangeInput,
+    handleChangeSelect,
+    handleOnBlur,
+    resetForm,
+  };
 };

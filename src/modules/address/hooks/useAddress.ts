@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRequests } from '../../../shared/hooks/useRequests';
 import { useAddressReducer } from '../../../store/reducers/addressReducer/useAddressReducer';
 import { AddressType } from '../../../shared/types/AddressType';
 import { URL_ADDRESS } from '../../../shared/constants/urls';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 interface InsertAddressDTO {
   complement: string;
@@ -15,20 +16,20 @@ interface InsertAddressDTO {
 export const useAddress = () => {
   const { request } = useRequests();
   const { addresses, setAddresses } = useAddressReducer();
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
+  const { loading } = useGlobalReducer();
+
+  const hasFetchedAddresses = useRef(false);
 
   const fetchAddresses = async () => {
-    setLoading(true);
+    if (hasFetchedAddresses.current) return;
+    hasFetchedAddresses.current = true;
 
-    const result = await request<AddressType[]>(
-      URL_ADDRESS,
-      MethodsEnum.GET,
-    );
-    
+    setLoading(true);
+    const result = await request<AddressType[]>(URL_ADDRESS, MethodsEnum.GET);
     if (result) {
       setAddresses(result);
     }
-
     setLoading(false);
   };
 

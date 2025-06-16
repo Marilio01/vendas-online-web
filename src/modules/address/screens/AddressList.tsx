@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Card, Empty, List, Radio } from 'antd';
 import { HomeOutlined, PlusOutlined } from '@ant-design/icons';
 import { AddressType } from '../../../shared/types/AddressType';
@@ -29,6 +29,10 @@ const AddressList = ({ addresses, onSelectAddress, selectedAddressId }: AddressL
     handleCloseModal();
     fetchAddresses();
   };
+
+  useEffect(() => {
+  fetchAddresses();
+}, []);
 
   return (
     <>
