@@ -5,6 +5,7 @@ import Input from '../../../shared/components/inputs/input/Input';
 import { URL_USER } from '../../../shared/constants/urls';
 import { MethodsEnum } from '../../../shared/enums/methods.enum';
 import { UserType } from '../../../modules/login/types/UserType';
+import { useGlobalReducer } from '../../../store/reducers/globalReducer/useGlobalReducer';
 
 interface FormData {
   name: string;
@@ -21,7 +22,8 @@ interface EditUserDataButtonProps {
 }
 
 const EditUserDataButton = ({ user, onUpdateSuccess }: EditUserDataButtonProps) => {
-  const { request, loading } = useRequests();
+  const { request } = useRequests();
+  const { loading } = useGlobalReducer();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<FormData>({ name: '', phone: '' });
   const [errors, setErrors] = useState<FormErrors>({});

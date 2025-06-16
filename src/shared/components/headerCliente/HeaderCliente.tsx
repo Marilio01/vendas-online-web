@@ -8,11 +8,10 @@ import {
 import {
   SearchOutlined, ShoppingCartOutlined, UserOutlined, ShoppingOutlined, LogoutOutlined,
   LockOutlined, DownOutlined, IdcardOutlined, ToolOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons';
 
-// Hooks, Enums e Funções
 import { getUserInfoByToken, logout } from '../../functions/connection/auth';
-import { useCartReducer } from '../../../store/reducers/cartReducer/useCartReducer';
 import { useProductReducer } from '../../../store/reducers/productReducer/useProductReducer';
 import { useCart } from '../../../modules/cart/hooks/useCart';
 import { UserTypeEnum } from '../../enums/userType.enum';
@@ -26,15 +25,21 @@ const HeaderCliente = () => {
   const [openCart, setOpenCart] = useState(false);
   const [nomeCliente, setNomeCliente] = useState('');
 
-  // Hooks de lógica
   const user = useMemo(() => getUserInfoByToken(), []);
-  const { cart } = useCartReducer();
-  const { setSearchTerm } = useProductReducer(); // Para a busca
-  useCart();
+  const { cart, removeProductFromCart } = useCart();
+  const { setSearchTerm } = useProductReducer();
+
+  const [deleteModal, setDeleteModal] = useState<{ visible: boolean; id?: number }>({ visible: false });
+
+  const confirmDelete = async () => {
+    if (deleteModal.id) {
+      await removeProductFromCart(deleteModal.id);
+      setDeleteModal({ visible: false });
+    }
+  };
 
   const cartItems = Array.isArray(cart) ? cart : [];
 
-  // Cálculos com useMemo para otimização
   const cartTotalValue = useMemo(() => {
     return cartItems.reduce((acc, item) => acc + (item.product.price * item.amount), 0);
   }, [cartItems]);
@@ -43,7 +48,6 @@ const HeaderCliente = () => {
     return cartItems.reduce((acc, item) => acc + item.amount, 0);
   }, [cartItems]);
 
-  // Handlers
   const handleGoToAdmin = () => navigate('/product');
   const handleGoToHome = () => navigate('/display');
 
@@ -77,7 +81,17 @@ const HeaderCliente = () => {
   };
 
   return (
-    <>
+    <>  
+      <Modal
+        open={deleteModal.visible}
+        title="Tem certeza?"
+        onCancel={() => setDeleteModal({ visible: false })}
+        onOk={confirmDelete}
+        okText="Sim, remover"
+        cancelText="Cancelar"
+      >
+        Deseja remover este item do carrinho?
+    </Modal>
       <Modal title="Atenção" open={openLogoutModal} onOk={handleLogout} onCancel={hideLogoutModal} okText="Sim" cancelText="Cancelar">
         <p>Tem certeza que deseja sair?</p>
       </Modal>
@@ -157,10 +171,16 @@ const HeaderCliente = () => {
           </EmptyCartContainer>
         ) : (
           <List
-            dataSource={cartItems}
+            dataSource={cart}
             renderItem={(item) => (
               <List.Item
                 actions={[
+                  <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => setDeleteModal({ visible: true, id: item.product.id })}
+              />
                 ]}
               >
                 <List.Item.Meta
