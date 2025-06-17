@@ -87,16 +87,25 @@ const OrderDetailScreen = () => {
           </Descriptions>
 
           <Divider />
+        <Descriptions title="Dados do endereço" bordered>
+          <Descriptions.Item label="Endereço" span={3}>
+            {`${order.address?.street || ''}, ${order.address?.numberAddress || 'S/N'}`}
+          </Descriptions.Item>
 
-          <Descriptions title="Dados do endereço" bordered>
-            <Descriptions.Item label="Cidade">{order.address?.city?.name ?? 'N/A'}</Descriptions.Item>
-            <Descriptions.Item label="Estado">{order.address?.city?.state?.name ?? 'N/A'}</Descriptions.Item>
-            <Descriptions.Item label="Complemento">{order.address?.complement ?? 'N/A'}</Descriptions.Item>
-            <Descriptions.Item label="Número">{order.address?.numberAddress ?? 'S/N'}</Descriptions.Item>
-            <Descriptions.Item label="CEP" span={2}>
-              {insertMaskInCEP(order.address?.cep || '')}
-            </Descriptions.Item>
-          </Descriptions>
+          <Descriptions.Item label="Bairro">
+            {order.address?.neighborhood || 'Não informado'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Complemento" span={2}>
+            {order.address?.complement || 'Nenhum'}
+          </Descriptions.Item>
+
+          <Descriptions.Item label="Cidade / UF">
+            {`${order.address?.city?.name || ''} / ${order.address?.city?.state?.uf || ''}`}
+          </Descriptions.Item>
+          <Descriptions.Item label="CEP" span={2}>
+            {insertMaskInCEP(order.address?.cep || '')}
+          </Descriptions.Item>
+        </Descriptions>
 
           <Divider />
 
