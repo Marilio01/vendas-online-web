@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Dropdown, Typography, Drawer, List, Button, Avatar, Tooltip } from 'antd';
+import { Modal, Dropdown, Typography, Drawer, List, Button, Avatar, Tooltip, Input } from 'antd';
 import {
   SearchOutlined, ShoppingCartOutlined, UserOutlined, ShoppingOutlined as MyShoppingIcon, LogoutOutlined,
   LockOutlined, DownOutlined, IdcardOutlined, ToolOutlined,
@@ -17,7 +17,7 @@ import { CartType } from '../../../shared/types/CartType';
 import {
   HeaderContainer, LeftSection, CenterSection, RightSection, LogoWrapper, LogoText,
   CartIcon, UserInfo, SearchInput, AdminButton, EmptyCartContainer, EmptyCartIcon,
-  CartItemContainer, ProductInfo, ItemControls, QuantityControl,
+  CartItemContainer, ProductInfo, ItemControls, QuantityControl, MobileSearchIcon, MobileSearchContainer,
 } from './headerCliente.style';
 
 const { Title, Text } = Typography;
@@ -27,6 +27,7 @@ const HeaderCliente = () => {
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [nomeCliente, setNomeCliente] = useState('');
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
   const [deleteModal, setDeleteModal] = useState<{ visible: boolean; id?: number }>({ visible: false });
 
   const confirmDelete = async () => {
@@ -106,16 +107,16 @@ const HeaderCliente = () => {
         <CenterSection>
           <SearchInput 
             placeholder="Buscar produtos..." 
-            prefix={<SearchOutlined />} 
             onSearch={(value) => setSearchTerm(value)}
             allowClear 
             enterButton
           />
         </CenterSection>
         <RightSection>
+          <MobileSearchIcon icon={<SearchOutlined />} onClick={() => setIsMobileSearchVisible(!isMobileSearchVisible)} />
           {(user?.typeUser === UserTypeEnum.Root || user?.typeUser === UserTypeEnum.Admin) && (
             <AdminButton icon={<ToolOutlined />} onClick={handleGoToAdmin}>
-              Painel Admin
+              <span className="admin-text">Painel Admin</span>
             </AdminButton>
           )}
           <CartIcon onClick={() => setOpenCart(true)}>
@@ -140,6 +141,20 @@ const HeaderCliente = () => {
           </Dropdown>
         </RightSection>
       </HeaderContainer>
+
+      {isMobileSearchVisible && (
+        <MobileSearchContainer>
+          <Input.Search
+            placeholder="Buscar produtos..."
+            allowClear
+            enterButton
+            onSearch={(value) => {
+              setSearchTerm(value);
+              setIsMobileSearchVisible(false);
+            }}
+          />
+        </MobileSearchContainer>
+      )}
 
       <Drawer
         title={`Carrinho (${cartItemCount} ${cartItemCount > 1 ? 'itens' : 'item'})`}

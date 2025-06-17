@@ -1,18 +1,51 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import SVGLogo from '../icons/SVGLogo';
 import { Button, Input, Space } from 'antd';
-import { SettingOutlined, ShoppingCartOutlined } from '@ant-design/icons'; 
+import { SettingOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+
+const hideOnMobile = css`
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
 
 export const SearchInput = styled(Input.Search)`
   width: 100%;
   max-width: 450px;
+  ${hideOnMobile}
+`;
 
-  @media (max-width: 768px) {
-    max-width: 200px;
+export const MobileSearchIcon = styled(Button)`
+  display: none;
+  background: transparent;
+  border: none;
+  color: #f0f0f0;
+  font-size: 22px;
+
+  &:hover {
+    background: transparent;
+    color: #1890ff;
   }
 
-  @media (max-width: 480px) {
-    max-width: 180px;
+  @media (max-width: 768px) {
+    display: inline-block;
+  }
+`;
+
+export const MobileSearchContainer = styled.div`
+  background-color: #002140;
+  padding: 10px 16px;
+  animation: slideDown 0.3s ease-in-out;
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 `;
 
@@ -25,13 +58,11 @@ export const HeaderContainer = styled.header`
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: rgba(255, 255, 255, 0.85);
+  flex-wrap: nowrap;
+  gap: 16px;
 
   @media (max-width: 768px) {
     padding: 10px 16px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 8px 12px;
   }
 `;
 
@@ -40,9 +71,17 @@ export const AdminButton = styled(Button)`
   border: none;
   color: white;
 
+  .admin-text {
+    margin-left: 8px;
+  }
+
   &:hover {
     background: linear-gradient(45deg, #40a9ff, #1890ff);
     box-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
+  }
+
+  .admin-text {
+    ${hideOnMobile}
   }
 `;
 
@@ -66,9 +105,10 @@ export const LeftSection = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
 
   @media (max-width: 768px) {
-    gap: 0;
+    gap: 8px;
   }
 `;
 
@@ -81,11 +121,6 @@ export const LogoWrapper = styled(SVGLogo)`
     width: 32px;
     height: 32px;
   }
-
-  @media (max-width: 480px) {
-    width: 28px;
-    height: 28px;
-  }
 `;
 
 export const LogoText = styled.h1`
@@ -93,30 +128,14 @@ export const LogoText = styled.h1`
   font-weight: 700;
   color: #f0f0f0;
   margin: 0;
-
-  @media (max-width: 768px) {
-    display: none;
-  }
+  ${hideOnMobile}
 `;
 
 export const CenterSection = styled.div`
   flex: 1;
   display: flex;
   justify-content: center;
-
-  input {
-    max-width: 450px;
-  }
-
-  @media (max-width: 768px) {
-    input {
-      max-width: 280px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    display: none;
-  }
+  min-width: 0;
 `;
 
 export const RightSection = styled.div`
@@ -126,10 +145,6 @@ export const RightSection = styled.div`
 
   @media (max-width: 768px) {
     gap: 16px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 12px;
   }
 `;
 
@@ -147,17 +162,13 @@ export const AdminPanelIcon = styled(SettingOutlined)`
   @media (max-width: 768px) {
     font-size: 22px;
   }
-
-  @media (max-width: 480px) {
-    font-size: 20px;
-  }
 `;
 
 export const CartIcon = styled.div`
   font-size: 26px;
   color: #f0f0f0;
   cursor: pointer;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: color 0.3s ease;
   position: relative;
 
   &:hover {
@@ -166,10 +177,6 @@ export const CartIcon = styled.div`
 
   @media (max-width: 768px) {
     font-size: 22px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 20px;
   }
 `;
 
@@ -202,6 +209,7 @@ export const UserInfo = styled.div`
     color: #f0f0f0;
     cursor: pointer;
     transition: color 0.2s ease;
+    ${hideOnMobile}
   }
 
   svg {
@@ -209,10 +217,6 @@ export const UserInfo = styled.div`
 
     @media (max-width: 768px) {
       font-size: 16px;
-    }
-
-    @media (max-width: 480px) {
-      font-size: 14px;
     }
   }
 `;

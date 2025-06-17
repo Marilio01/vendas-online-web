@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { logout } from '../../functions/connection/auth';
-import { HeaderContainer, LogoExit } from './header.style'; 
+import { HeaderContainer, LogoExit } from './header.style';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ const Header = () => {
         <p>Tem certeza que deseja sair?</p>
       </Modal>
 
-      <HeaderContainer>        
+      <HeaderContainer>
         <LogoExit onClick={showModal} />
       </HeaderContainer>
     </>
