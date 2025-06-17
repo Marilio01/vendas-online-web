@@ -1,108 +1,120 @@
-import { useState, useEffect, useMemo, useCallback  } from 'react';
-import { AddressType } from '../../../shared/types/AddressType';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useCorreios } from './useCorreios';
 
 interface AddressFormState {
   cep: string;
+  street: string;
+  neighborhood: string;
   numberAddress: string;
   complement: string;
   stateId?: number;
   cityId?: number;
 }
+
 interface AddressFormErrors {
   cep?: string;
+  street?: string;
+  neighborhood?: string;
   numberAddress?: string;
   complement?: string;
   stateId?: string;
   cityId?: string;
 }
+
 type TouchedFields = Partial<Record<keyof AddressFormState, boolean>>;
 
 const INITIAL_STATE: AddressFormState = {
   cep: '',
+  street: '',
+  neighborhood: '',
   numberAddress: '',
   complement: '',
   stateId: undefined,
   cityId: undefined,
 };
 
-export const useAddressForm = (addressToEdit?: AddressType) => {
+export const useAddressForm = (
+  fetchCities?: (stateId: number) => void,
+) => {
   const [address, setAddress] = useState<AddressFormState>(INITIAL_STATE);
   const [errors, setErrors] = useState<AddressFormErrors>({});
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
+  const [isAddressReadOnly, setIsAddressReadOnly] = useState(true);
+  const { fetchCep } = useCorreios();
 
-useEffect(() => {
-  if (addressToEdit) {
-    const newAddress = {
-      cep: addressToEdit.cep.replace(/\D/g, ''),
-      numberAddress: String(addressToEdit.numberAddress),
-      complement: addressToEdit.complement,
-      stateId: addressToEdit.city?.state?.id,
-      cityId: addressToEdit.city?.id,
-    };
-
-    setAddress(prev => {
-      if (JSON.stringify(prev) === JSON.stringify(newAddress)) {
-        return prev;
-      }
-      return newAddress;
-    });
-  }
-}, [addressToEdit]);
+  useEffect(() => {
+    const cepValue = address.cep.replace(/\D/g, '');
+    if (cepValue.length !== 8) {
+      return;
+    }
+    if (fetchCities) {
+      fetchCep(cepValue)
+        .then((data) => {
+          if (data && data.stateId && data.cityId) {
+            setIsAddressReadOnly(!!data.publicPlace);
+            setAddress(prev => ({
+              ...prev,
+              stateId: data.stateId,
+              cityId: data.cityId,
+              street: data.publicPlace || '',
+              neighborhood: data.neighborhood || '',
+              complement: '', numberAddress: ''
+            }));
+            fetchCities(data.stateId);
+          }
+        })
+        .catch(() => { /* ... */ });
+    }
+  }, [address.cep, fetchCities, fetchCep]);
 
   useEffect(() => {
     const newErrors: AddressFormErrors = {};
-    const trimmedComplement = address.complement.trim();
 
-    if (touchedFields.cep && (!address.cep || address.cep.length < 8)) {
-      newErrors.cep = 'CEP deve ter 8 dígitos.';
+    if (touchedFields.cep && (!address.cep || address.cep.length !== 8)) {
+      newErrors.cep = 'CEP inválido.';
     }
+
+    if (touchedFields.numberAddress && (!address.numberAddress || Number(address.numberAddress) <= 0)) {
+      newErrors.numberAddress = 'Número é obrigatório.';
+    }
+
+    if (touchedFields.street && !address.street) {
+      newErrors.street = 'Rua é obrigatória.';
+    }
+
+    if (touchedFields.neighborhood && !address.neighborhood) {
+      newErrors.neighborhood = 'Bairro é obrigatório.';
+    }
+
     if (touchedFields.stateId && !address.stateId) {
       newErrors.stateId = 'Estado é obrigatório.';
     }
+
     if (touchedFields.cityId && !address.cityId) {
       newErrors.cityId = 'Cidade é obrigatória.';
     }
-    if (touchedFields.complement) {
-      if (!trimmedComplement) {
-        newErrors.complement = 'Complemento é obrigatório.';
-      } else if (address.complement !== trimmedComplement) {
-        newErrors.complement = 'Não pode conter espaços extras.';
-      } else if (trimmedComplement.length < 3) {
-        newErrors.complement = 'Deve ter no mínimo 3 caracteres.';
-      }
-    }
-    if (touchedFields.numberAddress) {
-      if (!address.numberAddress) {
-        newErrors.numberAddress = 'Número é obrigatório.';
-      } else if (Number(address.numberAddress) <= 0) {
-        newErrors.numberAddress = 'Número inválido.';
-      }
-    }
 
-    setErrors(newErrors);
+    setErrors(currentErrors => {
+      const updatedErrors = { ...currentErrors };
+      Object.keys(newErrors).forEach(key => delete updatedErrors[key as keyof AddressFormErrors]);
+      return { ...updatedErrors, ...newErrors };
+    });
   }, [address, touchedFields]);
 
   const disabledButton = useMemo(() => {
-    const trimmedComplement = address.complement.trim();
     return !(
       address.cep.length === 8 &&
       address.stateId &&
       address.cityId &&
-      trimmedComplement.length >= 3 &&
-      address.complement === trimmedComplement &&
+      address.street &&
+      address.neighborhood &&
+      address.numberAddress &&
       Number(address.numberAddress) > 0
     );
   }, [address]);
 
-  const handleOnChangeInput = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    name: keyof AddressFormState
-  ) => {
-    let value = event.target.value;
-    if (name === 'cep' || name === 'numberAddress') {
-      value = value.replace(/\D/g, '');
-    }
-    setAddress(prev => ({ ...prev, [name]: value }));
+  const handleOnChangeInput = (event: React.ChangeEvent<HTMLInputElement>, name: keyof AddressFormState) => {
+    setAddress(prev => ({ ...prev, [name]: event.target.value }));
   };
 
   const handleChangeSelect = (value: number | undefined, name: keyof AddressFormState) => {
@@ -117,12 +129,14 @@ useEffect(() => {
     setAddress(INITIAL_STATE);
     setTouchedFields({});
     setErrors({});
-  }, []); 
+    setIsAddressReadOnly(true);
+  }, []);
 
   return {
     address,
     errors,
     disabledButton,
+    isAddressReadOnly,
     handleOnChangeInput,
     handleChangeSelect,
     handleOnBlur,
