@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Col, List, Row, Typography, Tooltip, Avatar, Modal } from 'antd'; 
-import { CheckOutlined, DeleteOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { CheckOutlined, DeleteOutlined, PlusOutlined, MinusOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { useCart } from '../../cart/hooks/useCart';
 import { useAddress } from '../../address/hooks/useAddress';
@@ -22,6 +22,7 @@ import {
   ItemControls,
   QuantityControl,
   ItemTotalPrice,
+  ActionButtonsContainer,
 } from '../styles/Checkout.styles';
 
 const Checkout = () => {
@@ -32,7 +33,6 @@ const Checkout = () => {
 
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>();
-
   const [deleteModal, setDeleteModal] = useState<{ visible: boolean; id?: number }>({ visible: false });
 
   const confirmDelete = async () => {
@@ -80,7 +80,6 @@ const Checkout = () => {
         onClose={() => setIsAddressModalOpen(false)}
         onSuccess={handleAddAddressSuccess}
       />
-
       <CheckoutContainer>
         <CheckoutTitle level={2}>Revisão do Pedido</CheckoutTitle>
         <Row gutter={[24, 24]}>
@@ -90,63 +89,51 @@ const Checkout = () => {
               selectedAddressId={selectedAddressId}
               onSelectAddress={setSelectedAddressId}
             />
-
             <Card style={{ marginTop: '24px' }} title="Itens no Carrinho">
-              <List
-                itemLayout="horizontal"
-                dataSource={cartItems}
-                renderItem={(item: CartType) => (
-                  <List.Item
-                    actions={[]}
-                  >
-                    <CartItemContainer>
-                      <ProductInfo>
-                        <List.Item.Meta
-                          avatar={<Avatar src={item.product.image} size={64} shape="square" />}
-                          title={<a href="#">{item.product.name}</a>}
-                          description={`Preço unitário: ${convertNumberToMoney(item.product.price)}`}
-                        />
-                      </ProductInfo>
-                      <ItemControls>
-                        <QuantityControl>
-                          <Button 
-                            size="small"
-                            icon={<MinusOutlined />} 
-                            onClick={() => updateProductAmount(item, item.amount - 1)}
-                            disabled={cartLoading}
-                          />
-                          <Typography.Text strong style={{ width: '20px', textAlign: 'center' }}>
-                            {item.amount}
-                          </Typography.Text>
-                          <Button 
-                            size="small"
-                            icon={<PlusOutlined />} 
-                            onClick={() => updateProductAmount(item, item.amount + 1)} 
-                            disabled={cartLoading}
-                          />
-                        </QuantityControl>
-
-                        <ItemTotalPrice>
-                          {convertNumberToMoney(item.product.price * item.amount)}
-                        </ItemTotalPrice>
-                        
-                        <Tooltip title="Remover produto">
-                          <Button 
-                            danger 
-                            type="text" 
-                            icon={<DeleteOutlined />} 
-                            onClick={() => setDeleteModal({ visible: true, id: item.product.id })}
-                            disabled={cartLoading}
-                          />
-                        </Tooltip>
-                      </ItemControls>
-                    </CartItemContainer>
-                  </List.Item>
-                )}
-              />
+              {cartItems.map((item: CartType) => (
+                <CartItemContainer key={item.product.id}>
+                  <ProductInfo>
+                    <List.Item.Meta
+                      avatar={<Avatar src={item.product.image} size={48} shape="square" />}
+                      title={<Typography.Text>{item.product.name}</Typography.Text>}
+                      description={`Preço unitário: ${convertNumberToMoney(item.product.price)}`}
+                    />
+                  </ProductInfo>
+                  <ItemControls>
+                    <QuantityControl>
+                      <Button 
+                        size="small"
+                        icon={<MinusOutlined />} 
+                        onClick={() => updateProductAmount(item, item.amount - 1)}
+                        disabled={cartLoading}
+                      />
+                      <Typography.Text strong style={{ width: '20px', textAlign: 'center' }}>
+                        {item.amount}
+                      </Typography.Text>
+                      <Button 
+                        size="small"
+                        icon={<PlusOutlined />} 
+                        onClick={() => updateProductAmount(item, item.amount + 1)} 
+                        disabled={cartLoading}
+                      />
+                    </QuantityControl>
+                    <ItemTotalPrice>
+                      {convertNumberToMoney(item.product.price * item.amount)}
+                    </ItemTotalPrice>
+                    <Tooltip title="Remover produto">
+                      <Button 
+                        danger 
+                        type="text" 
+                        icon={<DeleteOutlined />} 
+                        onClick={() => setDeleteModal({ visible: true, id: item.product.id })}
+                        disabled={cartLoading}
+                      />
+                    </Tooltip>
+                  </ItemControls>
+                </CartItemContainer>
+              ))}
             </Card>
           </Col>
-
           <Col xs={24} lg={8}>
             <Card title="Resumo do Pedido">
               <Row justify="space-between">
@@ -157,16 +144,25 @@ const Checkout = () => {
                 <Typography.Title level={4}>Total</Typography.Title>
                 <Typography.Title level={4}>{convertNumberToMoney(total)}</Typography.Title>
               </Row>
-              <Button
-                type="primary"
-                size="large"
-                icon={<CheckOutlined />}
-                style={{ width: '100%', marginTop: '24px' }}
-                onClick={handleProceedToPayment}
-                disabled={!selectedAddressId || cartItems.length === 0}
-              >
-                Prosseguir para Pagamento
-              </Button>
+              <ActionButtonsContainer>
+                <Button
+                  type="primary"
+                  size="large"
+                  icon={<CheckOutlined />}
+                  onClick={handleProceedToPayment}
+                  disabled={!selectedAddressId || cartItems.length === 0}
+                >
+                  Prosseguir para Pagamento
+                </Button>
+                <Button
+                  type="default"
+                  size="large"
+                  icon={<CloseOutlined />}
+                  onClick={() => navigate('/display')}
+                >
+                  Cancelar
+                </Button>
+              </ActionButtonsContainer>
             </Card>
           </Col>
         </Row>
