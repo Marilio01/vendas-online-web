@@ -1,23 +1,46 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card, Col, List, Row, Typography } from 'antd';
-import { CheckOutlined } from '@ant-design/icons';
+import { Button, Card, Col, List, Row, Typography, Tooltip, Avatar, Modal } from 'antd'; 
+import { CheckOutlined, DeleteOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
+
+import { useCart } from '../../cart/hooks/useCart';
 import { useAddress } from '../../address/hooks/useAddress';
-import AddressList from '../../address/screens/AddressList';
-import { CheckoutContainer, CheckoutTitle } from '../styles/Checkout.styles';
 import { useCartReducer } from '../../../store/reducers/cartReducer/useCartReducer';
-import { convertNumberToMoney } from '../../../shared/functions/money';
+
+import AddressList from '../../address/screens/AddressList';
 import AddressFormModal from '../../address/screens/AddressFormModal';
 import HeaderCliente from '../../../shared/components/headerCliente/HeaderCliente';
+import { CartType } from '../../../shared/types/CartType';
 
+import { convertNumberToMoney } from '../../../shared/functions/money';
+
+import { 
+  CheckoutContainer, 
+  CheckoutTitle,
+  CartItemContainer,
+  ProductInfo,
+  ItemControls,
+  QuantityControl,
+  ItemTotalPrice,
+} from '../styles/Checkout.styles';
 
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart } = useCartReducer();
-  const { addresses, fetchAddresses } = useAddress();
+  const { addresses } = useAddress();
+  const { updateProductAmount, removeProductFromCart, loading: cartLoading } = useCart();
 
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | undefined>();
+
+  const [deleteModal, setDeleteModal] = useState<{ visible: boolean; id?: number }>({ visible: false });
+
+  const confirmDelete = async () => {
+    if (deleteModal.id) {
+      await removeProductFromCart(deleteModal.id);
+      setDeleteModal({ visible: false });
+    }
+  };
 
   const cartItems = Array.isArray(cart) ? cart : [];
   const total = cartItems.reduce(
@@ -25,13 +48,8 @@ const Checkout = () => {
     0,
   );
 
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
-
   const handleAddAddressSuccess = () => {
     setIsAddressModalOpen(false);
-    fetchAddresses();
   };
 
   const handleProceedToPayment = () => {
@@ -40,15 +58,22 @@ const Checkout = () => {
       return;
     }
     navigate('/payment', {
-      state: {
-        addressId: selectedAddressId,
-        total: total,
-      },
+      state: { addressId: selectedAddressId, total: total },
     });
   };
 
   return (
     <>
+      <Modal
+        open={deleteModal.visible}
+        title="Tem certeza?"
+        onCancel={() => setDeleteModal({ visible: false })}
+        onOk={confirmDelete}
+        okText="Sim, remover"
+        cancelText="Cancelar"
+      >
+        Deseja remover este item do carrinho?
+      </Modal>
       <HeaderCliente />
       <AddressFormModal 
         open={isAddressModalOpen}
@@ -59,37 +84,77 @@ const Checkout = () => {
       <CheckoutContainer>
         <CheckoutTitle level={2}>Revisão do Pedido</CheckoutTitle>
         <Row gutter={[24, 24]}>
-          <Col xs={24} md={16}>
+          <Col xs={24} lg={16}>
             <AddressList
               addresses={addresses}
               selectedAddressId={selectedAddressId}
               onSelectAddress={setSelectedAddressId}
             />
 
-            <Card style={{ marginTop: '24px' }}>
+            <Card style={{ marginTop: '24px' }} title="Itens no Carrinho">
               <List
-                header={<Typography.Title level={5}>Itens no Carrinho</Typography.Title>}
+                itemLayout="horizontal"
                 dataSource={cartItems}
-                renderItem={(item) => (
-                  <List.Item>
-                    <List.Item.Meta
-                      avatar={<img src={item.product.image} alt={item.product.name} width={60} style={{ borderRadius: 4 }} />}
-                      title={`${item.product.name} (x${item.amount})`}
-                      description={convertNumberToMoney(item.product.price)}
-                    />
-                    <div>
-                      {convertNumberToMoney(item.product.price * item.amount)}
-                    </div>
+                renderItem={(item: CartType) => (
+                  <List.Item
+                    actions={[]}
+                  >
+                    <CartItemContainer>
+                      <ProductInfo>
+                        <List.Item.Meta
+                          avatar={<Avatar src={item.product.image} size={64} shape="square" />}
+                          title={<a href="#">{item.product.name}</a>}
+                          description={`Preço unitário: ${convertNumberToMoney(item.product.price)}`}
+                        />
+                      </ProductInfo>
+                      <ItemControls>
+                        <QuantityControl>
+                          <Button 
+                            size="small"
+                            icon={<MinusOutlined />} 
+                            onClick={() => updateProductAmount(item, item.amount - 1)}
+                            disabled={cartLoading}
+                          />
+                          <Typography.Text strong style={{ width: '20px', textAlign: 'center' }}>
+                            {item.amount}
+                          </Typography.Text>
+                          <Button 
+                            size="small"
+                            icon={<PlusOutlined />} 
+                            onClick={() => updateProductAmount(item, item.amount + 1)} 
+                            disabled={cartLoading}
+                          />
+                        </QuantityControl>
+
+                        <ItemTotalPrice>
+                          {convertNumberToMoney(item.product.price * item.amount)}
+                        </ItemTotalPrice>
+                        
+                        <Tooltip title="Remover produto">
+                          <Button 
+                            danger 
+                            type="text" 
+                            icon={<DeleteOutlined />} 
+                            onClick={() => setDeleteModal({ visible: true, id: item.product.id })}
+                            disabled={cartLoading}
+                          />
+                        </Tooltip>
+                      </ItemControls>
+                    </CartItemContainer>
                   </List.Item>
                 )}
               />
             </Card>
           </Col>
 
-          <Col xs={24} md={8}>
+          <Col xs={24} lg={8}>
             <Card title="Resumo do Pedido">
               <Row justify="space-between">
-                <Typography.Title level={4}>Total do Pedido</Typography.Title>
+                <Typography.Title level={5}>Subtotal</Typography.Title>
+                <Typography.Text>{convertNumberToMoney(total)}</Typography.Text>
+              </Row>
+              <Row justify="space-between" style={{ marginTop: '16px' }}>
+                <Typography.Title level={4}>Total</Typography.Title>
                 <Typography.Title level={4}>{convertNumberToMoney(total)}</Typography.Title>
               </Row>
               <Button
@@ -98,7 +163,7 @@ const Checkout = () => {
                 icon={<CheckOutlined />}
                 style={{ width: '100%', marginTop: '24px' }}
                 onClick={handleProceedToPayment}
-                disabled={!selectedAddressId}
+                disabled={!selectedAddressId || cartItems.length === 0}
               >
                 Prosseguir para Pagamento
               </Button>
