@@ -7,11 +7,11 @@ import {
   DisplayFlexJustifyBetween,
   DisplayFlexJustifyCenter,
 } from '../../../shared/components/styles/display.styled';
-import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
 import Table from '../../../shared/components/table/Table';
 import { insertMaskInCpf } from '../../../shared/functions/cpf';
 import { insertMaskInPhone } from '../../../shared/functions/phone';
 import { UserType } from '../../login/types/UserType';
+import { MobileSearchInput } from '../../../shared/components/styles/mobile.styled';
 
 const { Search } = Input;
 
@@ -69,9 +69,9 @@ const User = () => {
       ) : (
         <>
           <DisplayFlexJustifyBetween margin="0px 0px 16px 0px">
-            <LimitedContainer width={240}>
+            <MobileSearchInput>
               <Search placeholder="Buscar usuário" onSearch={handleOnChangeSearch} enterButton />
-            </LimitedContainer>
+            </MobileSearchInput>
           </DisplayFlexJustifyBetween>
           <Table columns={columns} dataSource={users} />
         </>

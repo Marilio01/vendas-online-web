@@ -3,9 +3,9 @@ import Input from '../../../shared/components/inputs/input/Input';
 import Screen from '../../../shared/components/screen/Screen';
 import {
   DisplayFlexJustifyCenter,
-  DisplayFlexJustifyRight,
 } from '../../../shared/components/styles/display.styled';
 import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
+import { FormButtonsContainer } from '../../../shared/components/styles/mobile.styled';
 import { useAdminInsert } from '../hooks/useAdminInsert';
 import { AdminRoutesEnum } from '../routes';
 
@@ -83,7 +83,7 @@ const AdminInsert = () => {
             errorMessage={errors?.password}
           />
 
-          <DisplayFlexJustifyRight>
+            <FormButtonsContainer> {/* Use the new styled component here */}
             <LimitedContainer margin="0px 8px" width={120}>
               <Button onClick={handleCancelInsert} danger>
                 Cancelar
@@ -94,7 +94,7 @@ const AdminInsert = () => {
                 Inserir
               </Button>
             </LimitedContainer>
-          </DisplayFlexJustifyRight>
+            </FormButtonsContainer> {/* Use the new styled component here */}
         </LimitedContainer>
       </DisplayFlexJustifyCenter>
     </Screen>

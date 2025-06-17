@@ -5,10 +5,8 @@ import Button from '../../../shared/components/buttons/button/Button';
 import Screen from '../../../shared/components/screen/Screen';
 import { useAdmin } from '../hooks/useAdmin';
 import {
-  DisplayFlexJustifyBetween,
   DisplayFlexJustifyCenter,
 } from '../../../shared/components/styles/display.styled';
-import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
 import Table from '../../../shared/components/table/Table';
 import { insertMaskInCpf } from '../../../shared/functions/cpf';
 import { insertMaskInPhone } from '../../../shared/functions/phone';
@@ -18,6 +16,7 @@ import { UserTypeEnum } from '../../../shared/enums/userType.enum';
 import { getUserInfoByToken } from '../../../shared/functions/connection/auth';
 import { useNavigate } from 'react-router-dom';
 import { AdminRoutesEnum } from '../routes';
+import { MobileInsertButton, MobileSearchInput, ProductSearchAndButtonContainer } from '../../../shared/components/styles/mobile.styled';
 
 const { Search } = Input;
 
@@ -81,18 +80,18 @@ const Admin = () => {
         </DisplayFlexJustifyCenter>
       ) : (
         <>
-          <DisplayFlexJustifyBetween margin="0px 0px 16px 0px">
-            <LimitedContainer width={240}>
-              <Search placeholder="Buscar Adiministrador" onSearch={handleOnChangeSearch} enterButton />
-            </LimitedContainer>
-            <LimitedContainer width={180}>
+          <ProductSearchAndButtonContainer>
+            <MobileSearchInput> {/* Correctly placed MobileSearchInput */}
+              <Search placeholder="Buscar Administrador" onSearch={handleOnChangeSearch} enterButton />
+            </MobileSearchInput>
+            <MobileInsertButton> {/* Correctly placed MobileInsertButton */}
               {userToken?.typeUser === UserTypeEnum.Root && (
                 <Button type="primary" onClick={handleGoToInsertAdmin}>
                   Inserir Admin
                 </Button>
               )}
-            </LimitedContainer>
-          </DisplayFlexJustifyBetween>
+            </MobileInsertButton>
+          </ProductSearchAndButtonContainer>
           <Table columns={columns} dataSource={users} />
         </>
       )}
