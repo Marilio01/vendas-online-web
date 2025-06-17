@@ -4,13 +4,12 @@ import { ColumnsType } from 'antd/es/table';
 import Button from '../../../shared/components/buttons/button/Button';
 import Screen from '../../../shared/components/screen/Screen';
 import { useCategory } from '../hooks/useCategory';
-import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
 import Table from '../../../shared/components/table/Table';
 import { CategoryType } from '../../../shared/types/CategoryType';
 import {
-  DisplayFlex,
-  DisplayFlexJustifyBetween,
+  DisplayFlexJustifyRight,
 } from '../../../shared/components/styles/display.styled';
+import { MobileInsertButton, MobileSearchInput, ProductSearchAndButtonContainer } from '../../../shared/components/styles/mobile.styled';
 
 const { Search } = Input;
 
@@ -52,24 +51,20 @@ const Category = () => {
       width: 240,
       key: 'x',
       render: (_, category) => (
-        <LimitedContainer width={180}>
-          <DisplayFlex>
-            <LimitedContainer margin="0px 16px 0px 0px" width={90}>
-              <Button onClick={() => handleGoToEditCategory(category.id)} icon={<EditOutlined />}>
-                Editar
-              </Button>
-            </LimitedContainer>
-            {category.amountProducts <= 0 && (
-              <Button
-                danger
-                onClick={() => handleOpenModalDelete(category.id)}
-                icon={<DeleteOutlined />}
-              >
-                Deletar
-              </Button>
-            )}
-          </DisplayFlex>
-        </LimitedContainer>
+          <DisplayFlexJustifyRight>
+            <Button onClick={() => handleGoToEditCategory(category.id)} icon={<EditOutlined />}>
+              Editar
+            </Button>
+          {category.amountProducts <= 0 && (
+            <Button
+              danger
+              onClick={() => handleOpenModalDelete(category.id)}
+              icon={<DeleteOutlined />}
+            >
+              Deletar
+            </Button>
+          )}
+          </DisplayFlexJustifyRight>
       ),
     },
   ];
@@ -95,17 +90,17 @@ const Category = () => {
       >
         <p>Tem certeza que deseja excluir essa categoria?</p>
       </Modal>
-      <DisplayFlexJustifyBetween margin="0px 0px 16px 0px">
-        <LimitedContainer width={240}>
+      <ProductSearchAndButtonContainer> 
+        <MobileSearchInput>
           <Search placeholder="Buscar categoria" onSearch={handleOnChangeSearch} enterButton />
-        </LimitedContainer>
+        </MobileSearchInput>
 
-        <LimitedContainer width={120}>
+        <MobileInsertButton>
           <Button type="primary" onClick={handleOnClickCategory}>
             Inserir
           </Button>
-        </LimitedContainer>
-      </DisplayFlexJustifyBetween>
+        </MobileInsertButton>
+      </ProductSearchAndButtonContainer>
 
       <Table columns={columns} dataSource={categories} />
     </Screen>

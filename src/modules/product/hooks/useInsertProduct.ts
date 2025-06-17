@@ -29,7 +29,7 @@ export const useInsertProduct = (productId?: string) => {
   const navigate = useNavigate();
   const { request } = useRequests();
   const { loading } = useGlobalReducer();
-  const { product: productReducer, setProduct: setProductReducer } = useProductReducer();
+  const { product: productGlobal, setProduct: setProductGlobal } = useProductReducer();
   
   const [product, setProduct] = useState<InsertProduct>(DEFAULT_PRODUCT);
   const [loadingProduct, setLoadingProduct] = useState(false);
@@ -43,25 +43,26 @@ export const useInsertProduct = (productId?: string) => {
     if (productId) {
       setIsEdit(true);
       setLoadingProduct(true);
-      request(URL_PRODUCT_ID.replace('{productId}', productId), MethodsEnum.GET, setProductReducer)
+      request(URL_PRODUCT_ID.replace('{productId}', productId), MethodsEnum.GET, setProductGlobal)
         .finally(() => setLoadingProduct(false));
     } else {
-      setProductReducer(undefined);
+      setIsEdit(false);
       setProduct(DEFAULT_PRODUCT);
       setTouchedFields({});
+      setProductGlobal(undefined);
     }
   }, [productId]);
 
   useEffect(() => {
-    if (productReducer) {
+    if (productGlobal) {
       setProduct({
-        name: productReducer.name,
-        price: productReducer.price,
-        image: productReducer.image,
-        categoryId: productReducer.category?.id,
+        name: productGlobal.name,
+        price: productGlobal.price,
+        image: productGlobal.image,
+        categoryId: productGlobal.category?.id,
       });
     }
-  }, [productReducer]);
+  }, [productGlobal]);
 
   useEffect(() => {
     const newErrors: ProductErrors = {};
@@ -120,11 +121,15 @@ export const useInsertProduct = (productId?: string) => {
     } else {
       await request(URL_PRODUCT, MethodsEnum.POST, undefined, body, 'Produto criado!');
     }
+    setProductGlobal(undefined);
     navigate(ProductRoutesEnum.PRODUCT);
   };
   
-  const handleOnClickCancel = () => navigate(ProductRoutesEnum.PRODUCT);
-
+  const handleOnClickCancel = () => {
+    setProductGlobal(undefined);
+    navigate(ProductRoutesEnum.PRODUCT);
+  };
+  
   return {
     product,
     loading,

@@ -4,12 +4,12 @@ import Input from '../../../shared/components/inputs/input/Input';
 import Screen from '../../../shared/components/screen/Screen';
 import {
   DisplayFlexJustifyCenter,
-  DisplayFlexJustifyRight,
 } from '../../../shared/components/styles/display.styled';
 import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
 import { useInsertCategory } from '../hooks/useInsertCategory';
 import { CategoryRoutesEnum } from '../routes';
 import Loading from '../../../shared/components/loading/Loading';
+import { FormButtonsContainer } from '../../../shared/components/styles/mobile.styled';
 
 const CategoryInsert = () => {
   const { 
@@ -53,7 +53,7 @@ const CategoryInsert = () => {
               margin="0px 0px 16px 0px"
               errorMessage={error}
             />
-            <DisplayFlexJustifyRight>
+            <FormButtonsContainer>
               <LimitedContainer margin="0px 8px" width={120}>
                 <Button onClick={handleOnClickCancel} danger>
                   Cancelar
@@ -69,7 +69,7 @@ const CategoryInsert = () => {
                   {categoryId ? 'Salvar' : 'Inserir categoria'}
                 </Button>
               </LimitedContainer>
-            </DisplayFlexJustifyRight>
+            </FormButtonsContainer>
           </LimitedContainer>
         )}
       </DisplayFlexJustifyCenter>

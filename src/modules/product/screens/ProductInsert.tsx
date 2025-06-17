@@ -7,10 +7,11 @@ import { LimitedContainer } from '../../../shared/components/styles/limited.styl
 import InputMoney from '../../../shared/components/inputs/inputMoney/InputMoney';
 import { useInsertProduct } from '../hooks/useInsertProduct';
 import { useCategory } from '../../category/hooks/useCategory';
-import { DisplayFlexJustifyCenter, DisplayFlexJustifyRight } from '../../../shared/components/styles/display.styled';
+import { DisplayFlexJustifyCenter } from '../../../shared/components/styles/display.styled';
 import { CategoryType } from '../../../shared/types/CategoryType';
 import Loading from '../../../shared/components/loading/Loading';
 import { ProductRoutesEnum } from '../routes';
+import { FormButtonsContainer } from '../../../shared/components/styles/mobile.styled';
 
 const ProductInsert = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -82,8 +83,8 @@ const ProductInsert = () => {
               }))}
               errorMessage={errors?.categoryId}
             />
-            <DisplayFlexJustifyRight>
-              <LimitedContainer margin="0px 8px" width={120}>
+            <FormButtonsContainer>
+              <LimitedContainer margin="0px 8px 0px 0px" width={120}>
                 <Button danger onClick={handleOnClickCancel}>Cancelar</Button>
               </LimitedContainer>
               <LimitedContainer width={160}>
@@ -96,7 +97,7 @@ const ProductInsert = () => {
                   {isEdit ? 'Salvar' : 'Inserir produto'}
                 </Button>
               </LimitedContainer>
-            </DisplayFlexJustifyRight>
+            </FormButtonsContainer>
           </LimitedContainer>
         </DisplayFlexJustifyCenter>
       )}

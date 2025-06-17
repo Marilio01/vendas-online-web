@@ -10,11 +10,10 @@ import Button from '../../../shared/components/buttons/button/Button';
 import Screen from '../../../shared/components/screen/Screen';
 import { useProduct } from '../hooks/useProduct';
 import { convertNumberToMoney } from '../../../shared/functions/money';
-import { LimitedContainer } from '../../../shared/components/styles/limited.styled';
 import {
-  DisplayFlex,
-  DisplayFlexJustifyBetween,
+  DisplayFlexJustifyRight,
 } from '../../../shared/components/styles/display.styled';
+import { MobileInsertButton, MobileSearchInput, ProductSearchAndButtonContainer } from '../../../shared/components/styles/mobile.styled';
 
 const { Search } = Input;
 
@@ -37,6 +36,7 @@ const Product = () => {
         dataIndex: 'id',
         key: 'id',
         render: (_, product) => <TooltipImage product={product} />,
+        responsive: ['md'],
       },
       {
         title: 'Nome',
@@ -63,8 +63,7 @@ const Product = () => {
         width: 240,
         key: 'x',
         render: (_, product) => (
-          <LimitedContainer width={180}>
-            <DisplayFlex>
+          <DisplayFlexJustifyRight>
               <Button
                 margin="0px 16px 0px 0px"
                 onClick={() => handleEditProduct(product.id)}
@@ -79,8 +78,7 @@ const Product = () => {
               >
                 Deletar
               </Button>
-            </DisplayFlex>
-          </LimitedContainer>
+          </DisplayFlexJustifyRight>
         ),
       },
     ],
@@ -108,17 +106,17 @@ const Product = () => {
       >
         <p>Tem certeza que deseja excluir esse produto?</p>
       </Modal>
-      <DisplayFlexJustifyBetween margin="0px 0px 16px 0px">
-        <LimitedContainer width={240}>
+      <ProductSearchAndButtonContainer> 
+        <MobileSearchInput> 
           <Search placeholder="Buscar produto" onSearch={onSearch} enterButton />
-        </LimitedContainer>
+        </MobileSearchInput>
 
-        <LimitedContainer width={120}>
+        <MobileInsertButton>
           <Button type="primary" onClick={handleOnClickInsert}>
             Inserir
           </Button>
-        </LimitedContainer>
-      </DisplayFlexJustifyBetween>
+        </MobileInsertButton>
+      </ProductSearchAndButtonContainer>
       <Table columns={columns} dataSource={productsFiltered} />
     </Screen>
   );
