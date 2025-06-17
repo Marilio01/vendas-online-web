@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import SVGLogo from '../icons/SVGLogo';
-import { Button, Input } from 'antd';
+import { Button, Input, Space } from 'antd';
 import { SettingOutlined, ShoppingCartOutlined } from '@ant-design/icons'; 
 
 export const SearchInput = styled(Input.Search)`
@@ -140,7 +140,7 @@ export const AdminPanelIcon = styled(SettingOutlined)`
   transition: color 0.3s ease, transform 0.2s ease;
 
   &:hover {
-    color: #ffc107; // Uma cor de destaque, como amarelo
+    color: #ffc107;
     transform: rotate(45deg);
   }
 
@@ -215,4 +215,27 @@ export const UserInfo = styled.div`
       font-size: 14px;
     }
   }
+`;
+
+export const CartItemContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+`;
+
+export const ProductInfo = styled.div`
+  flex: 1;
+`;
+
+export const ItemControls = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+export const QuantityControl = styled(Space)`
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  padding: 2px;
 `;

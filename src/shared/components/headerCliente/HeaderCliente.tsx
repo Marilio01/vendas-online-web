@@ -1,14 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Dropdown, Typography, Drawer, List, Button } from 'antd';
+import { Modal, Dropdown, Typography, Drawer, List, Button, Avatar, Tooltip } from 'antd';
 import {
-  HeaderContainer, LeftSection, CenterSection, RightSection, LogoWrapper, LogoText,
-  CartIcon, UserInfo, SearchInput, AdminButton, EmptyCartContainer, EmptyCartIcon,
-} from './headerCliente.style';
-import {
-  SearchOutlined, ShoppingCartOutlined, UserOutlined, ShoppingOutlined, LogoutOutlined,
+  SearchOutlined, ShoppingCartOutlined, UserOutlined, ShoppingOutlined as MyShoppingIcon, LogoutOutlined,
   LockOutlined, DownOutlined, IdcardOutlined, ToolOutlined,
-  DeleteOutlined,
+  DeleteOutlined, PlusOutlined, MinusOutlined,
 } from '@ant-design/icons';
 
 import { getUserInfoByToken, logout } from '../../functions/connection/auth';
@@ -16,6 +12,13 @@ import { useProductReducer } from '../../../store/reducers/productReducer/usePro
 import { useCart } from '../../../modules/cart/hooks/useCart';
 import { UserTypeEnum } from '../../enums/userType.enum';
 import { convertNumberToMoney } from '../../../shared/functions/money';
+import { CartType } from '../../../shared/types/CartType';
+
+import {
+  HeaderContainer, LeftSection, CenterSection, RightSection, LogoWrapper, LogoText,
+  CartIcon, UserInfo, SearchInput, AdminButton, EmptyCartContainer, EmptyCartIcon,
+  CartItemContainer, ProductInfo, ItemControls, QuantityControl,
+} from './headerCliente.style';
 
 const { Title, Text } = Typography;
 
@@ -24,11 +27,6 @@ const HeaderCliente = () => {
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [nomeCliente, setNomeCliente] = useState('');
-
-  const user = useMemo(() => getUserInfoByToken(), []);
-  const { cart, removeProductFromCart } = useCart();
-  const { setSearchTerm } = useProductReducer();
-
   const [deleteModal, setDeleteModal] = useState<{ visible: boolean; id?: number }>({ visible: false });
 
   const confirmDelete = async () => {
@@ -37,6 +35,10 @@ const HeaderCliente = () => {
       setDeleteModal({ visible: false });
     }
   };
+
+  const user = useMemo(() => getUserInfoByToken(), []);
+  const { cart, removeProductFromCart, updateProductAmount, loading: cartLoading } = useCart();
+  const { setSearchTerm } = useProductReducer();
 
   const cartItems = Array.isArray(cart) ? cart : [];
 
@@ -67,7 +69,7 @@ const HeaderCliente = () => {
   const handleGoToCheckout = () => { setOpenCart(false); navigate('/checkout'); };
   
   const menuItems = [
-    { key: 'compras', icon: <ShoppingOutlined />, label: 'Minhas Compras' },
+    { key: 'compras', icon: <MyShoppingIcon />, label: 'Minhas Compras' },
     { key: 'dados', icon: <IdcardOutlined />, label: 'Meus Dados' },
     { key: 'senha', icon: <LockOutlined />, label: 'Alterar Senha' },
     { key: 'sair', icon: <LogoutOutlined />, label: 'Sair' },
@@ -79,9 +81,9 @@ const HeaderCliente = () => {
     else if (key === 'senha') navigate('/changePassword');
     else if (key === 'sair') showLogoutModal();
   };
-
+  
   return (
-    <>  
+    <>
       <Modal
         open={deleteModal.visible}
         title="Tem certeza?"
@@ -91,7 +93,7 @@ const HeaderCliente = () => {
         cancelText="Cancelar"
       >
         Deseja remover este item do carrinho?
-    </Modal>
+      </Modal>
       <Modal title="Atenção" open={openLogoutModal} onOk={handleLogout} onCancel={hideLogoutModal} okText="Sim" cancelText="Cancelar">
         <p>Tem certeza que deseja sair?</p>
       </Modal>
@@ -140,23 +142,19 @@ const HeaderCliente = () => {
       </HeaderContainer>
 
       <Drawer
-        title="Carrinho de Compras"
+        title={`Carrinho (${cartItemCount} ${cartItemCount > 1 ? 'itens' : 'item'})`}
         placement="right"
         onClose={() => setOpenCart(false)}
         open={openCart}
-        width={350}
+        width={380}
         footer={
           cartItems.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Text type="secondary">Total de produtos:</Text>
-                <Text strong>{cartItemCount} {cartItemCount > 1 ? 'itens' : 'item'}</Text>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Title level={5} style={{ margin: 0 }}>Total:</Title>
                 <Title level={5} style={{ margin: 0 }}>{convertNumberToMoney(cartTotalValue)}</Title>
               </div>
-              <Button type="primary" style={{ width: '100%' }} onClick={handleGoToCheckout}>
+              <Button type="primary" style={{ width: '100%' }} onClick={handleGoToCheckout} size="large">
                 Finalizar Compra
               </Button>
             </div>
@@ -171,23 +169,34 @@ const HeaderCliente = () => {
           </EmptyCartContainer>
         ) : (
           <List
-            dataSource={cart}
-            renderItem={(item) => (
-              <List.Item
-                actions={[
-                  <Button
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => setDeleteModal({ visible: true, id: item.product.id })}
-              />
-                ]}
-              >
-                <List.Item.Meta
-                  avatar={<img src={item.product?.image || '/default-image.png'} alt={item.product?.name} style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 4 }} />}
-                  title={`${item.product?.name} x ${item.amount}`}
-                  description={convertNumberToMoney((item.product?.price || 0) * (item.amount || 1))}
-                />
+            dataSource={cartItems}
+            renderItem={(item: CartType) => (
+              <List.Item>
+                <CartItemContainer>
+                  <Avatar src={item.product?.image || '/default-image.png'} size={60} shape="square" />
+                  <ProductInfo>
+                    <Text strong>{item.product?.name}</Text>
+                    <Text type="secondary" style={{ display: 'block' }}>
+                      {convertNumberToMoney((item.product?.price || 0))}
+                    </Text>
+                  </ProductInfo>
+                  <ItemControls>
+                    <QuantityControl>
+                      <Button size="small" icon={<MinusOutlined />} onClick={() => updateProductAmount(item, item.amount - 1)} disabled={cartLoading} />
+                      <Text strong style={{ minWidth: 20, textAlign: 'center' }}>{item.amount}</Text>
+                      <Button size="small" icon={<PlusOutlined />} onClick={() => updateProductAmount(item, item.amount + 1)} disabled={cartLoading} />
+                    </QuantityControl>
+                    <Tooltip title="Remover">
+                      <Button
+                        type="text"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => setDeleteModal({ visible: true, id: item.product.id })}
+                        disabled={cartLoading}
+                      />
+                    </Tooltip>
+                  </ItemControls>
+                </CartItemContainer>
               </List.Item>
             )}
           />
