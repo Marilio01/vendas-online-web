@@ -8,4 +8,8 @@ interface LimitedContainerProps {
 export const LimitedContainer = styled.div<LimitedContainerProps>`
   width: ${(props) => props.width}px;
   ${(props) => (props.margin ? `margin: ${props.margin}` : '')};
+
+    /* @media (max-width: 768px) {
+    width: 100%;
+  } */
 `;
