@@ -226,6 +226,10 @@ export const CartItemContainer = styled.div`
   align-items: center;
   width: 100%;
   gap: 16px;
+
+  .ant-avatar-square img {
+    object-fit: contain;
+  }
 `;
 
 export const ProductInfo = styled.div`
