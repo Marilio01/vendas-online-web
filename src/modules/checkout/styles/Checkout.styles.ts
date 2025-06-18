@@ -35,6 +35,10 @@ export const CartItemContainer = styled.div`
 export const ProductInfo = styled.div`
   flex: 1;
   min-width: 200px;
+
+  .ant-avatar-square img {
+    object-fit: contain;
+  }
 `;
 
 export const ItemControls = styled.div`
