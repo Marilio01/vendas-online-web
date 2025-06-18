@@ -14,12 +14,21 @@ export const useProduct = () => {
   const { request } = useRequests();
   const navigate = useNavigate();
 
+  const getAndSortProducts = () => {
+    request<ProductType[]>(URL_PRODUCT, MethodsEnum.GET).then((data) => {
+      if (data) {
+        const sortedProducts = [...data].sort((a, b) => a.id - b.id);
+        setProducts(sortedProducts);
+      }
+    });
+  };
+
   useEffect(() => {
     setProdutsFiltered([...products]);
   }, [products]);
 
   useEffect(() => {
-    request<ProductType[]>(URL_PRODUCT, MethodsEnum.GET, setProducts);
+    getAndSortProducts();
   }, []);
 
   const handleOnClickInsert = () => {
@@ -30,13 +39,15 @@ export const useProduct = () => {
     if (!value) {
       setProdutsFiltered([...products]);
     } else {
-      setProdutsFiltered([...productsFiltered.filter((product) => product.name.includes(value))]);
+      setProdutsFiltered(
+        products.filter((product) => product.name.toLowerCase().includes(value.toLowerCase())),
+      );
     }
   };
 
   const handleDeleteProduct = async () => {
     await request(URL_PRODUCT_ID.replace('{productId}', `${productIdDelete}`), MethodsEnum.DELETE);
-    await request<ProductType[]>(URL_PRODUCT, MethodsEnum.GET, setProducts);
+    getAndSortProducts();
     setProductIdDelete(undefined);
   };
 

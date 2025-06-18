@@ -64,20 +64,20 @@ const Product = () => {
         key: 'x',
         render: (_, product) => (
           <DisplayFlexJustifyRight>
-              <Button
-                margin="0px 16px 0px 0px"
-                onClick={() => handleEditProduct(product.id)}
-                icon={<EditOutlined />}
-              >
-                Editar
-              </Button>
-              <Button
-                danger
-                onClick={() => handleOpenModalDelete(product.id)}
-                icon={<DeleteOutlined />}
-              >
-                Deletar
-              </Button>
+            <Button
+              margin="0px 16px 0px 0px"
+              onClick={() => handleEditProduct(product.id)}
+              icon={<EditOutlined />}
+            >
+              Editar
+            </Button>
+            <Button
+              danger
+              onClick={() => handleOpenModalDelete(product.id)}
+              icon={<DeleteOutlined />}
+            >
+              Deletar
+            </Button>
           </DisplayFlexJustifyRight>
         ),
       },
@@ -106,8 +106,8 @@ const Product = () => {
       >
         <p>Tem certeza que deseja excluir esse produto?</p>
       </Modal>
-      <ProductSearchAndButtonContainer> 
-        <MobileSearchInput> 
+      <ProductSearchAndButtonContainer>
+        <MobileSearchInput>
           <Search placeholder="Buscar produto" onSearch={onSearch} enterButton />
         </MobileSearchInput>
 

@@ -24,13 +24,12 @@ interface ProductErrors {
 
 type TouchedFields = Partial<Record<keyof InsertProduct, boolean>>;
 
-
 export const useInsertProduct = (productId?: string) => {
   const navigate = useNavigate();
   const { request } = useRequests();
   const { loading } = useGlobalReducer();
   const { product: productGlobal, setProduct: setProductGlobal } = useProductReducer();
-  
+
   const [product, setProduct] = useState<InsertProduct>(DEFAULT_PRODUCT);
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -88,12 +87,12 @@ export const useInsertProduct = (productId?: string) => {
 
     setErrors(newErrors);
 
-    const isFormValid = 
+    const isFormValid =
       trimmedName.length >= 3 && product.name === trimmedName &&
       urlRegex.test(trimmedImage) &&
       product.price > 0 &&
       product.categoryId;
-      
+
     setDisabledButton(!isFormValid);
 
   }, [product, touchedFields]);
@@ -109,7 +108,7 @@ export const useInsertProduct = (productId?: string) => {
   const handleChangeSelect = (value: string) => {
     setProduct({ ...product, categoryId: Number(value) });
   };
-  
+
   const handleOnBlur = (name: keyof InsertProduct) => {
     setTouchedFields(prev => ({ ...prev, [name]: true }));
   };
@@ -124,12 +123,12 @@ export const useInsertProduct = (productId?: string) => {
     setProductGlobal(undefined);
     navigate(ProductRoutesEnum.PRODUCT);
   };
-  
+
   const handleOnClickCancel = () => {
     setProductGlobal(undefined);
     navigate(ProductRoutesEnum.PRODUCT);
   };
-  
+
   return {
     product,
     loading,
