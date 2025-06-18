@@ -40,84 +40,118 @@ export const useAddressForm = (
   const [errors, setErrors] = useState<AddressFormErrors>({});
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [isAddressReadOnly, setIsAddressReadOnly] = useState(true);
+  const [cepApiError, setCepApiError] = useState<string | undefined>();
   const { fetchCep } = useCorreios();
 
   useEffect(() => {
     const cepValue = address.cep.replace(/\D/g, '');
+    
+    setCepApiError(undefined);
+
     if (cepValue.length !== 8) {
+      setAddress(prev => ({
+        ...prev,
+        street: '',
+        neighborhood: '',
+        stateId: undefined,
+        cityId: undefined,
+      }));
+      setIsAddressReadOnly(true);
       return;
     }
-    if (fetchCities) {
-      fetchCep(cepValue)
-        .then((data) => {
-          if (data && data.stateId && data.cityId) {
-            setIsAddressReadOnly(!!data.publicPlace);
-            setAddress(prev => ({
-              ...prev,
-              stateId: data.stateId,
-              cityId: data.cityId,
-              street: data.publicPlace || '',
-              neighborhood: data.neighborhood || '',
-              complement: '', numberAddress: ''
-            }));
-            fetchCities(data.stateId);
-          }
-        })
-        .catch(() => { /* ... */ });
-    }
-  }, [address.cep, fetchCities, fetchCep]);
 
-  useEffect(() => {
+    // Chamamos fetchCep com a opção para suprimir a notificação global
+    fetchCep(cepValue, { showGlobalError: false })
+      .then((data) => {
+        if (data?.stateId && data?.cityId) {
+          setIsAddressReadOnly(!!data.publicPlace);
+          setAddress(prev => ({
+            ...prev,
+            stateId: data.stateId,
+            cityId: data.cityId,
+            street: data.publicPlace || '',
+            neighborhood: data.neighborhood || '',
+          }));
+          fetchCities?.(data.stateId);
+        } else {
+          setCepApiError('CEP não encontrado.');
+          setIsAddressReadOnly(false);
+        }
+      })
+      .catch(() => {
+        setCepApiError('CEP inválido.');
+        setIsAddressReadOnly(false);
+      });
+  }, [address.cep, fetchCep, fetchCities]);
+
+  const validate = useCallback((formState: AddressFormState): AddressFormErrors => {
     const newErrors: AddressFormErrors = {};
+    const cepValue = formState.cep.replace(/\D/g, '');
 
-    if (touchedFields.cep && (!address.cep || address.cep.length !== 8)) {
-      newErrors.cep = 'CEP inválido.';
+    if (!cepValue || cepValue.length !== 8) {
+      newErrors.cep = 'CEP deve conter 8 dígitos.';
     }
 
-    if (touchedFields.numberAddress && (!address.numberAddress || Number(address.numberAddress) <= 0)) {
-      newErrors.numberAddress = 'Número é obrigatório.';
-    }
-
-    if (touchedFields.street && !address.street) {
+    if (!formState.street.trim()) {
       newErrors.street = 'Rua é obrigatória.';
+    } else if (formState.street.trim().length < 3) {
+      newErrors.street = 'Rua deve ter no mínimo 3 caracteres.';
     }
 
-    if (touchedFields.neighborhood && !address.neighborhood) {
+    if (!formState.neighborhood.trim()) {
       newErrors.neighborhood = 'Bairro é obrigatório.';
+    } else if (formState.neighborhood.trim().length < 3) {
+      newErrors.neighborhood = 'Bairro deve ter no mínimo 3 caracteres.';
     }
 
-    if (touchedFields.stateId && !address.stateId) {
+    if (!formState.numberAddress.trim()) {
+      newErrors.numberAddress = 'Número é obrigatório.';
+    } else if (isNaN(Number(formState.numberAddress)) || Number(formState.numberAddress) <= 0) {
+      newErrors.numberAddress = 'Número inválido.';
+    }
+    
+    if (!formState.stateId) {
       newErrors.stateId = 'Estado é obrigatório.';
     }
 
-    if (touchedFields.cityId && !address.cityId) {
+    if (!formState.cityId) {
       newErrors.cityId = 'Cidade é obrigatória.';
     }
 
-    setErrors(currentErrors => {
-      const updatedErrors = { ...currentErrors };
-      Object.keys(newErrors).forEach(key => delete updatedErrors[key as keyof AddressFormErrors]);
-      return { ...updatedErrors, ...newErrors };
+    return newErrors;
+  }, []);
+
+  useEffect(() => {
+    const validationErrors = validate(address);
+    if (cepApiError) {
+      validationErrors.cep = cepApiError;
+    }
+
+    const shownErrors: AddressFormErrors = {};
+    
+    (Object.keys(touchedFields) as Array<keyof TouchedFields>).forEach((key) => {
+      if (validationErrors[key]) {
+        shownErrors[key] = validationErrors[key];
+      }
     });
-  }, [address, touchedFields]);
+
+    if (validationErrors.cep && (touchedFields.cep || cepApiError)) {
+      shownErrors.cep = validationErrors.cep;
+    }
+
+    setErrors(shownErrors);
+  }, [address, touchedFields, validate, cepApiError]);
 
   const disabledButton = useMemo(() => {
-    return !(
-      address.cep.length === 8 &&
-      address.stateId &&
-      address.cityId &&
-      address.street &&
-      address.neighborhood &&
-      address.numberAddress &&
-      Number(address.numberAddress) > 0
-    );
-  }, [address]);
+    const validationErrors = validate(address);
+    return Object.keys(validationErrors).length > 0 || !!cepApiError;
+  }, [address, validate, cepApiError]);
 
   const handleOnChangeInput = (event: React.ChangeEvent<HTMLInputElement>, name: keyof AddressFormState) => {
-    setAddress(prev => ({ ...prev, [name]: event.target.value }));
-  };
-
-  const handleChangeSelect = (value: number | undefined, name: keyof AddressFormState) => {
+    let value = event.target.value;
+    if (name === 'cep' || name === 'numberAddress') {
+      value = value.replace(/\D/g, '');
+    }
     setAddress(prev => ({ ...prev, [name]: value }));
   };
 
@@ -130,6 +164,7 @@ export const useAddressForm = (
     setTouchedFields({});
     setErrors({});
     setIsAddressReadOnly(true);
+    setCepApiError(undefined);
   }, []);
 
   return {
@@ -138,7 +173,6 @@ export const useAddressForm = (
     disabledButton,
     isAddressReadOnly,
     handleOnChangeInput,
-    handleChangeSelect,
     handleOnBlur,
     resetForm,
   };
