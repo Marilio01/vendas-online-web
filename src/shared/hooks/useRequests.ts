@@ -1,12 +1,13 @@
 import { useCallback } from 'react';
 import { NavigateFunction } from 'react-router-dom';
-import ConnectionAPI, { connectionAPIPost, MethodType } from '../functions/connection/connectionAPI';
+import ConnectionAPI, { MethodType } from '../functions/connection/connectionAPI';
 import { useGlobalReducer } from '../../store/reducers/globalReducer/useGlobalReducer';
 import { AuthType } from '../../modules/login/types/AuthType';
 import { ERROR_INVALID_PASSWORD } from '../constants/errosStatus';
 import { URL_AUTH } from '../constants/urls';
 import { setAuthorizationToken } from '../functions/connection/auth';
 import { FirstScreenRoutesEnum } from '../../modules/firstScreen/routes';
+import { connectionAPIPost } from '../functions/connection/connectionAPI';
 
 export const useRequests = () => {
   const { setNotification, setUser, setLoading } = useGlobalReducer();
@@ -17,18 +18,27 @@ export const useRequests = () => {
     saveGlobal?: (object: T) => void,
     body?: unknown,
     message?: string,
+    options?: {
+      handleError?: boolean;
+    }
   ): Promise<T | undefined> => {
     setLoading(true);
+    const handleError = options?.handleError !== false;
+
     try {
       const result = await ConnectionAPI.connect<T>(url, method, body);
       if (saveGlobal) saveGlobal(result);
       if (message) setNotification(message, 'success');
       return result;
     } catch (error: any) {
-      if (error?.response?.status === 404) return undefined;
-      const errorMessage = error?.response?.data?.message || 'Erro desconhecido.';
-      setNotification(errorMessage, 'error');
-      return undefined;
+      if (handleError) {
+        if (error?.response?.status === 404) return undefined;
+        const errorMessage = error?.response?.data?.message || 'Erro desconhecido.';
+        setNotification(errorMessage, 'error');
+        return undefined;
+      }
+      
+      throw error;
     } finally {
       setLoading(false);
     }
